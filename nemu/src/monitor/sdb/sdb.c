@@ -23,6 +23,135 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+//我写的用于将字符串参数转换成整数的函数
+int string_to_int(const char *str, int *result) {
+    // 参数检查
+    if (str == NULL || result == NULL) {
+        return -1; // 参数错误
+    }
+    
+    // 跳过前导空白字符
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+    
+    // 处理可选的正负号
+    int sign = 1;
+    if (*str == '+') {
+        str++;
+    } else if (*str == '-') {
+        sign = -1;
+        str++;
+    }
+    
+    // 检查是否为空字符串或只有符号
+    if (*str == '\0') {
+        return -1; // 无效输入
+    }
+    
+    // 转换数字
+    long long value = 0; // 使用long long来检测溢出
+    int digit_count = 0;
+    
+    while (*str != '\0') {
+        // 检查是否为数字字符
+        if (!isdigit((unsigned char)*str)) {
+            return -1; // 非数字字符
+        }
+        
+        // 转换为数字
+        int digit = *str - '0';
+        
+        // 检查溢出
+        if (value > (LLONG_MAX - digit) / 10) {
+            return -2; // 溢出错误
+        }
+        
+        value = value * 10 + digit;
+        digit_count++;
+        str++;
+    }
+    
+    // 应用符号
+    value *= sign;
+    
+    // 检查是否在int范围内
+    if (value > INT_MAX || value < INT_MIN) {
+        return -2; // 溢出错误
+    }
+    
+    // 返回结果
+    *result = (int)value;
+    return 0; // 成功
+}
+
+bool parse_hex_arg(char *args, uint32_t *result) {
+    if (args == NULL || result == NULL) {
+        return false;
+    }
+    
+    char *p = args;
+    
+    // 跳过空白字符
+    while (isspace((unsigned char)*p)) {
+        p++;
+    }
+    
+    // 检查字符串是否为空
+    if (*p == '\0') {
+        return false;
+    }
+    
+    // 检查是否以 "0x" 或 "0X" 开头
+    if (p[0] == '0' && (p[1] == 'x' || p[1] == 'X')) {
+        p += 2;
+    }
+    
+    // 检查跳过前缀后是否还有字符
+    if (*p == '\0') {
+        return false;
+    }
+    
+    uint32_t value = 0;
+    bool has_valid_digit = false;
+    
+    // 逐个字符解析
+    while (*p != '\0') {
+        char ch = *p;
+        uint8_t digit;
+        
+        if (ch >= '0' && ch <= '9') {
+            digit = ch - '0';
+        } else if (ch >= 'a' && ch <= 'f') {
+            digit = ch - 'a' + 10;
+        } else if (ch >= 'A' && ch <= 'F') {
+            digit = ch - 'A' + 10;
+        } else {
+            // 遇到非十六进制字符，停止解析
+            // 可能是表达式的一部分，如 "0x80000000 + 4"
+            break;
+        }
+        
+        // 检查溢出（32位）
+        if (value > (0xFFFFFFFFU >> 4)) {
+            return false;
+        }
+        
+        value = (value << 4) | digit;
+        has_valid_digit = true;
+        p++;
+    }
+    
+    if (!has_valid_digit) {
+        return false;
+    }
+    
+    *result = value;
+    return true;
+}
+
+
+
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -38,7 +167,7 @@ static char* rl_gets() {
   if (line_read && *line_read) {
     add_history(line_read);
   }
-
+   
   return line_read;
 }
 
@@ -54,6 +183,60 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args){
+  int n=0;
+  if(!string_to_int(args,&n))
+    cpu_exec(n);
+  return 0;
+}
+
+static int cmd_info(char *args){
+  if(strcmp(args, "r") == 0) {
+     isa_reg_display();
+  }
+  return 0;
+}
+
+static int cmd_p(char *args){
+  bool success = false;
+  int result = expr(args,&success);
+  if(success)
+    printf("%d\n",result);
+  else
+    printf("error\n");
+  return 0;
+}
+
+
+
+static int cmd_x(char *tmp){
+    char *str = tmp;
+    char *str_end = str + strlen(str);
+    
+    /* 把第一个数抽取出来*/
+    char *cmd = strtok(str, " ");
+    
+    /* 解析第二个表达式
+     */
+    char *args = cmd + strlen(cmd) + 1;
+    if (args >= str_end) {
+      args = NULL;
+    }
+    
+    int n;
+    uint32_t paddr;
+    if(!string_to_int(cmd,&n)&&cmd&&args&&parse_hex_arg(args,&paddr)){
+      for(int i=0;i<n;i++)
+        {
+        printf("addr:0x%08x data:0x%08x\n",paddr+4*i,paddr_read(paddr+4*i,4));
+        
+        }
+    
+    }
+    
+ 
+  return 0;
+}
 static struct {
   const char *name;
   const char *description;
@@ -64,7 +247,12 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  { "si","-[N] Execute N instructions in single step",cmd_si },
+  {"info","-r/-w Print various debugging information",cmd_info},
+  { "x", "/NFU ADDR Examine memory", cmd_x },
+  { "p", "进行一个表达式的求解，支持多形式", cmd_p },
+  //{ "watch", "EXPR Set watchpoint", cmd_watch },
+  
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -121,6 +309,8 @@ void sdb_mainloop() {
     extern void sdl_clear_event_queue();
     sdl_clear_event_queue();
 #endif
+
+
 
     int i;
     for (i = 0; i < NR_CMD; i ++) {

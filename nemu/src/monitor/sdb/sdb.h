@@ -17,6 +17,12 @@
 #define __SDB_H__
 
 #include <common.h>
+//下面的头文件是我加的
+#include <stdio.h>
+#include <ctype.h>
+#include <limits.h>
+#include <string.h>
+#include "/home/he/ysyx-workbench/nemu/include/memory/paddr.h"
 
 word_t expr(char *e, bool *success);
 
