@@ -56,3 +56,19 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
 void isa_difftest_attach();
 
 #endif
+
+//下面的头文件是我加的
+#include <stdio.h>
+#include <ctype.h>
+#include <limits.h>
+#include <string.h>
+#include "/home/he/ysyx-workbench/nemu/include/memory/paddr.h"
+
+
+//以下为watchpoint文件需要外部使用的内容
+void watchpoint_add(char *args);
+void isa_watchpoint_display(void);
+int watchpoint_change_test(void);
+void watchpoint_delete(int no);
+
+

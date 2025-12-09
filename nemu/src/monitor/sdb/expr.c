@@ -30,6 +30,16 @@ enum {
   TK_OR,
   TK_HEX,
   TK_REG,
+  TK_GE,
+  TK_LE,
+  TK_GT,       // 大于
+  TK_LT,       // 小于
+  TK_BITAND,   // 按位与
+  TK_BITOR,    // 按位或
+  TK_BITXOR,   // 按位异或
+  TK_BITNOT,   // 按位取反
+  TK_SHL,      // 左移
+  TK_SHR ,      // 右移
   TK_DEREF
 };
 
@@ -46,17 +56,27 @@ static struct rule {
   {"\\+", '+'},          // plus
   {"==", TK_EQ},        // 相等
   {"!=", TK_UEQ},        // 不等
+  {"(0x|0X)[0-9a-fA-F]+",TK_HEX},     //十六进制数字
   {"\\-?[0-9]+", TK_NUM},          // 十进制数字
   {"\\-", '-'},          // 减
-  {"\\*", '*'},          // 乘或者解引用？
+  {"\\*", '*'},          // 乘
   {"\\/", '/'},          // 除
   {"\\(", '('},          // 左括号
   {"\\)", ')'},          // 右括号
-  {"(0x|0X)[0-9a-fA-F]+",TK_HEX},     //十六进制数字
-
   {"\\$[a-zA-Z0-9]+",TK_REG},                //寄存器读取运算      
   {"\\&\\&", TK_AND},             //与运算
   {"\\|\\|", TK_OR},              //或运算  
+  {"<<", TK_SHL},         //左移
+  {">>", TK_SHR},         //右移
+  {">=", TK_GE},  //大于等于
+  {"<=", TK_LE}, //小于等于
+  {">", TK_GT},  //大于
+  {"<", TK_LT},  //小于
+  {"\\&", TK_BITAND},      // 按位与
+  {"\\|", TK_BITOR},       // 按位或
+  {"\\^", TK_BITXOR},     //按位异或
+  {"\\~", TK_BITNOT},      //按位取反
+
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -220,14 +240,68 @@ static bool make_token(char *e) {
         tokens[nr_token].type = TK_UEQ;
         nr_token++;
         break;
+        
     case TK_AND:
         tokens[nr_token].type = TK_AND;
         nr_token++;
         break;
+        
     case TK_OR:
         tokens[nr_token].type = TK_OR;
         nr_token++;
         break;
+        
+    case TK_GE:
+        tokens[nr_token].type = TK_GE;
+        nr_token++;
+        break;
+        
+    case TK_LE:
+        tokens[nr_token].type = TK_LE;
+        nr_token++;
+        break;  
+        
+    case TK_GT:
+   	 tokens[nr_token].type = TK_GT;
+     	 nr_token++;
+   	 break;
+
+    case TK_LT:
+   	 tokens[nr_token].type = TK_LT;
+   	 nr_token++;
+   	 break;
+
+    case TK_BITAND:
+       	 tokens[nr_token].type = TK_BITAND;
+       	 nr_token++;
+       	 break;
+
+    case TK_BITOR:
+       	 tokens[nr_token].type = TK_BITOR;
+       	 nr_token++;
+       	 break;
+
+    case TK_BITXOR:
+       	 tokens[nr_token].type = TK_BITXOR;
+       	 nr_token++;
+       	 break;
+
+    case TK_BITNOT:
+       	 tokens[nr_token].type = TK_BITNOT;
+       	 nr_token++;
+       	 break;
+
+    case TK_SHL:
+       	 tokens[nr_token].type = TK_SHL;
+       	 nr_token++;
+       	 break;
+
+    case TK_SHR:
+       	 tokens[nr_token].type = TK_SHR;
+       	 nr_token++;
+       	 break;
+        
+          
     case '+':
     case '-':
     case '*':
@@ -258,10 +332,12 @@ static bool make_token(char *e) {
   return true;
 }
 
-// 辅助函数：判断是否为运算符
-static bool is_op(int type) {
-  return type == '+' || type == '-' || type == '*' || type == '/' || 
-         type == TK_EQ || type == TK_UEQ||type == TK_AND || type == TK_OR;
+// 辅助函数：获取运算符是否为一元运算符
+static bool is_unary_op(int pos) {
+  if (tokens[pos].type == TK_BITNOT || tokens[pos].type == TK_DEREF) {
+    return true;
+  }
+  return false;
 }
 
 // 辅助函数：获取运算符优先级
@@ -269,21 +345,51 @@ static int op_precedence(int type) {
   switch (type) {
     case '*':
     case '/':
-      return 5;  // 最高优先级
+      return 10;  
+    
     case '+':
     case '-':
+      return 9;
+    
+    case TK_SHL:   // <<
+    case TK_SHR:   // >>
+      return 8;
+    
+    case TK_GT:    // >
+    case TK_LT:    // <
+    case TK_GE:    // >=
+    case TK_LE:    // <=
+      return 7;
+    
+    case TK_EQ:    // ==
+    case TK_UEQ:   // !=
+      return 6;
+    
+    case TK_BITAND: // &
+      return 5;
+    
+    case TK_BITXOR: // ^
       return 4;
-    case TK_EQ:   // ==
-    case TK_UEQ:  // !=
+    
+    case TK_BITOR:  // |
       return 3;
-    case TK_AND:  // &&
+    
+    case TK_AND:    // &&
       return 2;
-    case TK_OR:   // ||
-      return 1;   // 最低优先级
+    
+    case TK_OR:     // ||
+      return 1;
+    
+    // TK_BITNOT (~) 和 TK_DEREF (*) 优先级通常为8
+    // TK_NEG (-) 优先级也应为8
+    
     default:
       return 0;  // 不是运算符
   }
 }
+
+
+
 // 辅助函数：检查括号是否匹配
 static bool check_paren(int p, int q) {
   if (tokens[p].type != '(' || tokens[q].type != ')') {
@@ -309,7 +415,7 @@ static bool check_paren(int p, int q) {
 static int find_main_op(int p, int q) {
   int level = 0;
   int main_pos = -1;
-  int min_prec = 100;  // 初始化为高优先级
+  int min_prec = 1000;  // 初始化为大数
   
   for (int i = p; i <= q; i++) {
     int type = tokens[i].type;
@@ -318,19 +424,29 @@ static int find_main_op(int p, int q) {
       level++;
     } else if (type == ')') {
       level--;
-    } else if (level == 0 && is_op(type)) {
-      // 在括号外找到运算符
+    } else if (level == 0) {
+      // 检查是否是二元运算符（一元运算符不算主运算符）
+      bool is_binary_op = false;
       int prec = op_precedence(type);
       
-      // 更新主运算符（优先级最低的运算符）
-      // 对于相同优先级，取右边的（左结合性）
-      if (prec < min_prec) {
-        min_prec = prec;
-        main_pos = i;
-      } else if (prec == min_prec && main_pos != -1) {
-        // 相同优先级，取右边的（左结合）
-        if (i > main_pos) {
+      // 如果优先级大于0，说明是二元运算符
+      if (prec > 0) {
+        is_binary_op = true;
+      }
+      
+      if (is_binary_op) {
+        // 在括号外找到二元运算符
+        // 我们找的是主运算符（表达式最后计算的运算符）
+        // 也就是优先级最低的运算符
+        
+        if (prec < min_prec) {
+          min_prec = prec;
           main_pos = i;
+        } else if (prec == min_prec && main_pos != -1) {
+          // 相同优先级，取右边的（左结合性）
+          if (i > main_pos) {
+            main_pos = i;
+          }
         }
       }
     }
@@ -338,7 +454,9 @@ static int find_main_op(int p, int q) {
   
   return main_pos;
 }
-word_t   eval(int p, int q) {
+
+
+word_t  eval(int p, int q) {
   if (p > q) {
     /* Bad expression */
     return -1;
@@ -370,13 +488,18 @@ word_t   eval(int p, int q) {
     return eval(p + 1, q - 1);
   }
   else {
+
+    /*
+    if (tokens[p].type == TK_DEREF) {
+      // 一元解引用运算符
+      word_t addr = eval(p + 1, q);
+      
+      return img[addr];
+    }
+    */
     int op_pos = find_main_op(p, q);
     
-    if (op_pos == -1) {
-      // 没有找到运算符，可能是表达式错误
-      return -1;
-    }
-    
+    if (op_pos != -1) {
  // 递归求值左右子表达式
     int32_t val1 = eval(p, op_pos - 1);
     int32_t val2 = eval(op_pos + 1, q);
@@ -394,15 +517,35 @@ word_t   eval(int p, int q) {
           return -1;  // 除零错误
         }
         return val1 / val2;
-      case TK_EQ:
-        return (val1 == val2);
-      case TK_UEQ:
-        return (val1 != val2);
-      case TK_AND:
-        return (val1 && val2);
-      case TK_OR:
-        return (val1 || val2);
+      case TK_EQ: return (val1 == val2);
+      case TK_UEQ: return (val1 != val2);
+      case TK_AND: return (val1 && val2);
+      case TK_OR: return (val1 || val2);
+      case TK_GT: return (val1 > val2);
+      case TK_LT: return (val1 < val2);
+      case TK_GE: return (val1 >= val2);
+      case TK_LE: return (val1 <= val2);
+      case TK_BITAND: return (val1 & val2);
+      case TK_BITOR: return (val1 | val2);
+      case TK_BITXOR: return (val1 ^ val2);
+      case TK_SHL: return (val1 << val2);
+      case TK_SHR: return (val1 >> val2);
+      
       default: assert(0);
+    }
+    } else {
+        if(is_unary_op(p)){
+        	  int type = tokens[p].type;
+        	  int32_t val = eval(p + 1, q);
+        	  switch (type) {
+        	    case TK_BITNOT:return ~val;
+        	    case TK_DEREF: return paddr_read(val,4);
+        	    
+        	  default: assert(0);
+        	  }
+        } else {
+          assert(0);
+        }
     }
   }
 }
@@ -416,6 +559,34 @@ word_t expr(char *e, bool *success) {
   int p = 0;
   int q = nr_token - 1;
   /* TODO: Insert codes to evaluate the expression. */
+  
+  for (int i = 0; i < nr_token; i ++) {
+    if (tokens[i].type == '*' && (i == 0 ||  // 表达式开头
+    tokens[i-1].type == '(' ||  // 左括号后面
+    tokens[i-1].type == '+' ||  // 加号后面
+    tokens[i-1].type == '-' ||  // 减号后面  
+    tokens[i-1].type == '*' ||  // 乘号后面（连续的解引用，如 **p）
+    tokens[i-1].type == '/' ||  // 除号后面
+    tokens[i-1].type == TK_EQ ||    // == 后面
+    tokens[i-1].type == TK_UEQ ||   // != 后面
+    tokens[i-1].type == TK_AND ||   // && 后面
+    tokens[i-1].type == TK_OR ||    // || 后面
+    tokens[i-1].type == TK_GT ||    // > 后面
+    tokens[i-1].type == TK_LT ||    // < 后面
+    tokens[i-1].type == TK_GE ||    // >= 后面
+    tokens[i-1].type == TK_LE ||    // <= 后面
+    tokens[i-1].type == TK_BITAND || // & 后面
+    tokens[i-1].type == TK_BITOR ||  // | 后面
+    tokens[i-1].type == TK_BITXOR || // ^ 后面
+    tokens[i-1].type == TK_SHL ||    // << 后面
+    tokens[i-1].type == TK_SHR ||    // >> 后面
+    tokens[i-1].type == TK_BITNOT || // ~ 后面
+    tokens[i-1].type == TK_DEREF)    // * 后面（连续解引用）
+    ) {
+        tokens[i].type = TK_DEREF;
+     }
+  }
+
   word_t n = eval(p,q);
   if(n!=-1){
     *success = true;

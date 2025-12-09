@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-
+  /*
     int run_tests = 1;
     
     // 如果启用了测试模式，运行测试然后退出
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
         run_expr_tests();
         return 0;  // 测试模式直接退出，不启动NEMU
     }
-
+  */
 
   engine_start();
   return is_exit_status_bad();

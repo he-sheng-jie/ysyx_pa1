@@ -23,6 +23,9 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+
+
+
 //我写的用于将字符串参数转换成整数的函数
 int string_to_int(const char *str, int *result) {
     // 参数检查
@@ -194,6 +197,10 @@ static int cmd_info(char *args){
   if(strcmp(args, "r") == 0) {
      isa_reg_display();
   }
+  if(strcmp(args, "w") == 0) {
+     isa_watchpoint_display();
+  }
+ 
   return 0;
 }
 
@@ -207,8 +214,17 @@ static int cmd_p(char *args){
   return 0;
 }
 
+static int cmd_w(char *args){
+  watchpoint_add(args);
+  return 0;
+}
 
-
+static int cmd_d(char *args){
+  int no = 0;
+  if(!string_to_int(args,&no))
+    watchpoint_delete(no);
+  return 0;
+}
 static int cmd_x(char *tmp){
     char *str = tmp;
     char *str_end = str + strlen(str);
@@ -225,7 +241,7 @@ static int cmd_x(char *tmp){
     
     int n;
     uint32_t paddr;
-    if(!string_to_int(cmd,&n)&&cmd&&args&&parse_hex_arg(args,&paddr)){
+    if(!string_to_int(cmd,&n) && cmd && args && parse_hex_arg(args,&paddr)){
       for(int i=0;i<n;i++)
         {
         printf("addr:0x%08x data:0x%08x\n",paddr+4*i,paddr_read(paddr+4*i,4));
@@ -251,7 +267,8 @@ static struct {
   {"info","-r/-w Print various debugging information",cmd_info},
   { "x", "/NFU ADDR Examine memory", cmd_x },
   { "p", "进行一个表达式的求解，支持多形式", cmd_p },
-  //{ "watch", "EXPR Set watchpoint", cmd_watch },
+  { "w", "设置一个表达式的监测点", cmd_w },
+  { "d", "删除一个表达式的监测点", cmd_d },
   
 };
 

@@ -17,7 +17,8 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-
+//这个文件是我填的，为监视点提供必要的函数
+#include "/home/he/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -38,6 +39,16 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  
+#ifdef CONFIG_CC_WATCHPOINT
+  if(watchpoint_change_test()){ 
+    printf("触发监视点\n");
+    isa_watchpoint_display();
+    
+    nemu_state.state = NEMU_STOP; 
+  };
+  
+#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -96,6 +107,7 @@ void assert_fail_msg() {
   statistic();
 }
 
+
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
@@ -125,4 +137,5 @@ void cpu_exec(uint64_t n) {
       // fall through
     case NEMU_QUIT: statistic();
   }
+
 }
