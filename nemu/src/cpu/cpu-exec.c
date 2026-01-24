@@ -61,9 +61,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
 #ifdef CONFIG_FTRACE
-  // uint32_t opcode = s->isa.inst;
+  uint32_t opcode = s->isa.inst;
   // printf("%x\n",opcode);
-  // handle_ftrace(pc, opcode, s->dnpc);
+  handle_ftrace(pc, opcode, s->dnpc);
 #endif
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE

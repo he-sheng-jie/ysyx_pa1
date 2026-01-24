@@ -130,8 +130,8 @@ void init_monitor(int argc, char *argv[]) {
   IFDEF(CONFIG_DEVICE, init_device());
 
   /* Initialize ftrace. */
-  // ftrace_init(elf_file);
-  // ftrace_dump_symbols();
+  ftrace_init(elf_file);
+  ftrace_dump_symbols();
   /* Perform ISA dependent initialization. */
   init_isa();
 
