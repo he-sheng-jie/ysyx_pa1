@@ -52,12 +52,26 @@ void init_map() {
   p_space = io_space;
 }
 
+void map_dtrace(paddr_t addr, int len, word_t data, IOMap *map, bool is_write){
+  #ifdef CONFIG_CC_DTRACE
+  word_t masked_data = data;
+  if (len == 1) masked_data &= 0xff;
+  else if (len == 2) masked_data &= 0xffff;
+  else if (len == 4) masked_data &= 0xffffffff;
+
+  const char *op = is_write ? "W" : "R";
+
+  printf("[DTRACE]  name:%s, op:%s, addr:0x%x, len:%d, data:0x%x\n",map->name,op,addr,len,masked_data);
+  #endif
+}
+
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
   word_t ret = host_read(map->space + offset, len);
+  map_dtrace(addr, len, ret, map, false);
   return ret;
 }
 
@@ -65,6 +79,7 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
-  host_write(map->space + offset, len, data);
   invoke_callback(map->callback, offset, len, true);
+  host_write(map->space + offset, len, data);
+  map_dtrace(addr, len, data, map, true);
 }

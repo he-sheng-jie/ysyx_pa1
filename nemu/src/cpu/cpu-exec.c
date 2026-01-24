@@ -16,6 +16,9 @@
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
+#include <cpu/iringbuf.h>
+#include <cpu/memlog.h>
+#include <cpu/ftrace.h>
 #include <locale.h>
 //这个文件是我填的，为监视点提供必要的函数
 #include "/home/he/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
@@ -33,6 +36,8 @@ static bool g_print_step = false;
 
 void device_update();
 
+
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -44,8 +49,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if(watchpoint_change_test()){ 
     printf("触发监视点\n");
     isa_watchpoint_display();
-    
-    nemu_state.state = NEMU_STOP; 
+    if(nemu_state.state != NEMU_END)
+      nemu_state.state = NEMU_STOP; 
   };
   
 #endif
@@ -55,6 +60,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
+#ifdef CONFIG_FTRACE
+  // uint32_t opcode = s->isa.inst;
+  // printf("%x\n",opcode);
+  // handle_ftrace(pc, opcode, s->dnpc);
+#endif
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -86,9 +96,19 @@ static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
+    iringbuf_record(s.logbuf);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-    if (nemu_state.state != NEMU_RUNNING) break;
+    if (nemu_state.state != NEMU_RUNNING) {
+      if(!(nemu_state.state == NEMU_END && nemu_state.halt_ret == 0) ||
+          (nemu_state.state == NEMU_QUIT)){
+        #if   defined(CONFIG_MTRACE)
+          memlog_dump_to_stdout();
+        #endif
+        iringbuf_dump();
+      }
+      break;
+    }
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }

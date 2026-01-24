@@ -21,13 +21,13 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-  char expr[2048];
-  word_t value;
+  char expr[2048];  // 存储用户输入的表达式字符串
+  word_t value;   //  缓存当前表达式的求值结果（用于后续比较）
 } WP;
 
 
 static WP wp_pool[NR_WP] = {};
-static WP *head = NULL, *free_ = NULL;
+static WP *head = NULL, *free_ = NULL; //  两条链表头指针
 
 void init_wp_pool() {
   int i;
@@ -36,11 +36,13 @@ void init_wp_pool() {
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
 
-  head = NULL;
-  free_ = wp_pool;
+  head = NULL;     // 使用中链表为空
+  free_ = wp_pool; // 空闲链表指向数组首元素
 }
 
 /* TODO: Implement the functionality of watchpoint */
+
+//  分配新监视点
 WP* new_wp(){
   if(free_ == NULL){
     assert(0);
@@ -58,11 +60,13 @@ WP* get_head(){
   
   return head;
 }
+
+//  释放监视点
 void free_wp(WP *wp){
 
   WP *prev = NULL;
   WP *curr = head;
-  
+  // 在 head 链中定位 wp 
   while (curr != NULL && curr->NO != wp->NO) {
     prev = curr;
     curr = curr->next;
@@ -86,7 +90,7 @@ void free_wp(WP *wp){
   
 }
 
-
+//  监视点添加
 void watchpoint_add(char *args) {
   if (args == NULL || args[0] == '\0') {
     printf("用法：w EXPRESSION\n");
@@ -112,6 +116,7 @@ void watchpoint_add(char *args) {
          wp->NO + 1, wp->expr, wp->value, wp->value);
 }
 
+// 查看监视点
 void isa_watchpoint_display(void) {
   if (head == NULL) {
     return;
@@ -123,13 +128,14 @@ void isa_watchpoint_display(void) {
   
   WP *current = head;
   while (current != NULL) {
-    printf("%d\t%s\t\t%u\n", 
+    printf("%u\t%s\t\t%u\n", 
            current->NO + 1, 
            current->expr, 
            current->value);
     current = current->next;
   }
 }
+
 
 void watchpoint_delete(int no) {
   if (no < 1 || no > NR_WP) {
@@ -149,10 +155,11 @@ void watchpoint_delete(int no) {
     return;
   }
   
-  printf("删除监视点 #%d：%s = %u\n", no, current->expr, current->value);
+  printf("删除监视点 #%u：%s = %u\n", no, current->expr, current->value);
   free_wp(current);
 }
 
+// 更新所有监视点当前值
 void watchpoint_updata(void){
   if (head == NULL) {
     return;
@@ -169,6 +176,7 @@ void watchpoint_updata(void){
   }
 }
 
+// 检测监视点当前表达式与保存的值是否一致
 int watchpoint_change_test(void) {
   if (head == NULL) {
     return 0;
@@ -177,7 +185,7 @@ int watchpoint_change_test(void) {
   WP *current = head;
   while (current != NULL) {
     bool success = false;
-    word_t tmp = expr(current->expr,&success);
+    word_t tmp = expr(current->expr,&success);// 利用expr将所有的表达式全部计算一遍
     if(tmp!=current->value||(!success)){
       watchpoint_updata();
       return 1;

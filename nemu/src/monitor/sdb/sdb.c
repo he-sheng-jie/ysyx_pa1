@@ -87,7 +87,7 @@ int string_to_int(const char *str, int *result) {
     *result = (int)value;
     return 0; // 成功
 }
-
+//我写的用于将十六进制整数字符串参数转换成整数的函数
 bool parse_hex_arg(char *args, uint32_t *result) {
     if (args == NULL || result == NULL) {
         return false;
@@ -181,6 +181,7 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
@@ -206,9 +207,9 @@ static int cmd_info(char *args){
 
 static int cmd_p(char *args){
   bool success = false;
-  int result = expr(args,&success);
+  word_t result = expr(args,&success);
   if(success)
-    printf("%d\n",result);
+    printf("%u   0x%x \n",result,result);
   else
     printf("error\n");
   return 0;

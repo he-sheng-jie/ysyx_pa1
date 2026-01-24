@@ -25,7 +25,17 @@ image: image-dep
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
+image-dep: $(IMAGE).elf
+
+# $(IMAGE).elf: $(OBJS) $(LDSCRIPTS)
+# 	@echo + LD "->" $@
+# 	@$(LD) $(LDFLAGS) -T $(firstword $(LDSCRIPTS)) -o $@ $(OBJS) $(LIBS)
+
+
+NPC_HOME?=/home/he/ysyx-workbench/npc
 run: insert-arg
-	echo "TODO: add command here to run simulation"
+	@echo "IMAGE = $(IMAGE)"
+	@echo "BIN   = $(IMAGE).bin"
+	@$(NPC_HOME)/obj_dir/Vtop $(IMAGE).bin
 
 .PHONY: insert-arg

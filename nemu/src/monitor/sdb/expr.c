@@ -20,6 +20,8 @@
  */
 #include <regex.h>
 
+//  Token 类型定义
+
 enum {
   TK_NOTYPE = 256, 
   TK_EQ,
@@ -44,8 +46,8 @@ enum {
 };
 
 static struct rule {
-  const char *regex;
-  int token_type;
+  const char *regex;  // 正则表达式（字符串字面量）
+  int token_type;     // 对应的 token 类型
 } rules[] = {
 
   /* TODO: Add more rules.
@@ -115,6 +117,7 @@ static int nr_token __attribute__((used))  = 0;
 #include <stdbool.h>
 #include <limits.h>
 
+//  辅助函数：将字符串内容转变为int变量
 word_t str_to_int(const char *str) {
     if (str == NULL || *str == '\0') {
         return 0; // 空字符串返回0
@@ -380,8 +383,6 @@ static int op_precedence(int type) {
     case TK_OR:     // ||
       return 1;
     
-    // TK_BITNOT (~) 和 TK_DEREF (*) 优先级通常为8
-    // TK_NEG (-) 优先级也应为8
     
     default:
       return 0;  // 不是运算符
@@ -456,9 +457,12 @@ static int find_main_op(int p, int q) {
 }
 
 
-word_t  eval(int p, int q) {
+word_t  eval(int p, int q, bool *success) {
+  if (success) *success = true; 
+
   if (p > q) {
     /* Bad expression */
+    if (success) *success = false;
     return -1;
   }
   else if (p == q) {
@@ -474,10 +478,13 @@ word_t  eval(int p, int q) {
       int32_t n = isa_reg_str2val(&tokens[p].str[1], &get_reg);
       if(get_reg)
         return n;
-      else
+      else {
+        if (success) *success = false;
         return -1;
+      }
     } else {
       // 错误：不是数字,也不是寄存器
+      if (success) *success = false;
       return -1;
     }
   }
@@ -485,24 +492,16 @@ word_t  eval(int p, int q) {
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
-    return eval(p + 1, q - 1);
+    return eval(p + 1, q - 1,success);
   }
   else {
 
-    /*
-    if (tokens[p].type == TK_DEREF) {
-      // 一元解引用运算符
-      word_t addr = eval(p + 1, q);
-      
-      return img[addr];
-    }
-    */
     int op_pos = find_main_op(p, q);
     
     if (op_pos != -1) {
  // 递归求值左右子表达式
-    int32_t val1 = eval(p, op_pos - 1);
-    int32_t val2 = eval(op_pos + 1, q);
+    int32_t val1 = eval(p, op_pos - 1,success);
+    int32_t val2 = eval(op_pos + 1, q,success);
     
     // 根据运算符类型计算结果
     switch (tokens[op_pos].type) {
@@ -514,6 +513,7 @@ word_t  eval(int p, int q) {
         return val1 * val2;
       case '/':
         if (val2 == 0) {
+          if (success) *success = false;
           return -1;  // 除零错误
         }
         return val1 / val2;
@@ -536,7 +536,7 @@ word_t  eval(int p, int q) {
     } else {
         if(is_unary_op(p)){
         	  int type = tokens[p].type;
-        	  int32_t val = eval(p + 1, q);
+        	  int32_t val = eval(p + 1, q, success);
         	  switch (type) {
         	    case TK_BITNOT:return ~val;
         	    case TK_DEREF: return paddr_read(val,4);
@@ -559,7 +559,6 @@ word_t expr(char *e, bool *success) {
   int p = 0;
   int q = nr_token - 1;
   /* TODO: Insert codes to evaluate the expression. */
-  
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == '*' && (i == 0 ||  // 表达式开头
     tokens[i-1].type == '(' ||  // 左括号后面
@@ -587,12 +586,11 @@ word_t expr(char *e, bool *success) {
      }
   }
 
-  word_t n = eval(p,q);
-  if(n!=-1){
-    *success = true;
-    return n;
-    }
-  else
-    return 0;
+  // *success = true;
+  
+  word_t n = eval(p,q,success);
+  
+  return n;
+
 }
 

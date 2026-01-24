@@ -22,7 +22,6 @@ int is_exit_status_bad();
 
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -30,6 +29,9 @@ int is_exit_status_bad();
 // 表达式求值函数
 extern word_t expr(char *e, bool *success);
 void run_expr_tests(void) {
+
+
+    // open the expr file
     FILE *test_fp = fopen("/home/he/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (test_fp == NULL) {
         printf("Error: Cannot open test file\n");
@@ -37,9 +39,10 @@ void run_expr_tests(void) {
     }
     printf("File opened successfully.\n");
     
+
     // 打开输出文件
-    FILE *demo_fp = fopen("/home/he/ysyx-workbench/nemu/tools/gen-expr/demo", "w");
-    FILE *result_fp = fopen("/home/he/ysyx-workbench/nemu/tools/gen-expr/result", "w");
+    FILE *demo_fp = fopen("/home/he/ysyx-workbench/nemu/tools/gen-expr/demo.txt", "w");
+    FILE *result_fp = fopen("/home/he/ysyx-workbench/nemu/tools/gen-expr/result.txt", "w");
     
     if (demo_fp == NULL || result_fp == NULL) {
         printf("Error: Cannot create output files\n");
@@ -48,9 +51,11 @@ void run_expr_tests(void) {
         if (result_fp) fclose(result_fp);
         return;
     }
+
+
     
     char line[65536];  // 缓冲区，处理长表达式
-    int line_count = 0;
+    int line_count = 0; 
     
     // 循环读取最多9999行
     while (line_count < 9999 && fgets(line, sizeof(line), test_fp) != NULL) {
@@ -142,8 +147,8 @@ void run_expr_tests(void) {
     fclose(result_fp);
     
     printf("Results written to:\n");
-    printf("  - /home/he/ysyx-workbench/nemu/tools/gen-expr/demo\n");
-    printf("  - /home/he/ysyx-workbench/nemu/tools/gen-expr/result\n");
+    printf("  - /home/he/ysyx-workbench/nemu/tools/gen-expr/demo.txt\n");
+    printf("  - /home/he/ysyx-workbench/nemu/tools/gen-expr/result.txt\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -154,16 +159,15 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  /*
-    int run_tests = 1;
+  
+    // int run_tests = 1;
     
-    // 如果启用了测试模式，运行测试然后退出
-    if (run_tests) {
-        run_expr_tests();
-        return 0;  // 测试模式直接退出，不启动NEMU
-    }
-  */
-
+    // // 如果启用了测试模式，运行测试然后退出
+    // if (run_tests) {
+    //     run_expr_tests();
+    //     return 0;  // 测试模式直接退出，不启动NEMU
+    // }
+  
   engine_start();
   return is_exit_status_bad();
 }
