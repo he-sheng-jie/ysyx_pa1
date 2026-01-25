@@ -264,11 +264,265 @@ void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) {
         vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf[__VdlyDim0__top__DOT__my_WBU__DOT__GPR__DOT__rf__v0] 
             = __VdlyVal__top__DOT__my_WBU__DOT__GPR__DOT__rf__v0;
     }
-    vlSelfRef.result = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
-        [0x0aU];
+    vlSelfRef.debug_rf[0U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001fU];
+    vlSelfRef.debug_rf[1U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001eU];
+    vlSelfRef.debug_rf[2U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001dU];
+    vlSelfRef.debug_rf[3U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001cU];
+    vlSelfRef.debug_rf[4U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001bU];
+    vlSelfRef.debug_rf[5U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000001aU];
+    vlSelfRef.debug_rf[6U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000019U];
+    vlSelfRef.debug_rf[7U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000018U];
+    vlSelfRef.debug_rf[8U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000017U];
+    vlSelfRef.debug_rf[9U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000016U];
+    vlSelfRef.debug_rf[0x0000000aU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000015U];
+    vlSelfRef.debug_rf[0x0000000bU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000014U];
+    vlSelfRef.debug_rf[0x0000000cU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000013U];
+    vlSelfRef.debug_rf[0x0000000dU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000012U];
+    vlSelfRef.debug_rf[0x0000000eU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000011U];
+    vlSelfRef.debug_rf[0x0000000fU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x00000010U];
+    vlSelfRef.debug_rf[0x00000010U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000fU];
+    vlSelfRef.debug_rf[0x00000011U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000eU];
+    vlSelfRef.debug_rf[0x00000012U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000dU];
+    vlSelfRef.debug_rf[0x00000013U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000cU];
+    vlSelfRef.debug_rf[0x00000014U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000bU];
+    vlSelfRef.debug_rf[0x00000015U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0x0000000aU];
+    vlSelfRef.debug_rf[0x00000016U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [9U];
+    vlSelfRef.debug_rf[0x00000017U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [8U];
+    vlSelfRef.debug_rf[0x00000018U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [7U];
+    vlSelfRef.debug_rf[0x00000019U] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [6U];
+    vlSelfRef.debug_rf[0x0000001aU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [5U];
+    vlSelfRef.debug_rf[0x0000001bU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [4U];
+    vlSelfRef.debug_rf[0x0000001cU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [3U];
+    vlSelfRef.debug_rf[0x0000001dU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [2U];
+    vlSelfRef.debug_rf[0x0000001eU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [1U];
+    vlSelfRef.debug_rf[0x0000001fU] = vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__rf
+        [0U];
     vlSelfRef.pc = ((IData)(vlSelfRef.top__DOT__is_jalr_ok)
                      ? (0xfffffffcU & vlSelfRef.top__DOT__ALU_result)
                      : vlSelfRef.top__DOT__pc_next);
+    vlSelfRef.top__DOT__debug_rf[0U] = vlSelfRef.debug_rf
+        [0U];
+    vlSelfRef.top__DOT__debug_rf[1U] = vlSelfRef.debug_rf
+        [1U];
+    vlSelfRef.top__DOT__debug_rf[2U] = vlSelfRef.debug_rf
+        [2U];
+    vlSelfRef.top__DOT__debug_rf[3U] = vlSelfRef.debug_rf
+        [3U];
+    vlSelfRef.top__DOT__debug_rf[4U] = vlSelfRef.debug_rf
+        [4U];
+    vlSelfRef.top__DOT__debug_rf[5U] = vlSelfRef.debug_rf
+        [5U];
+    vlSelfRef.top__DOT__debug_rf[6U] = vlSelfRef.debug_rf
+        [6U];
+    vlSelfRef.top__DOT__debug_rf[7U] = vlSelfRef.debug_rf
+        [7U];
+    vlSelfRef.top__DOT__debug_rf[8U] = vlSelfRef.debug_rf
+        [8U];
+    vlSelfRef.top__DOT__debug_rf[9U] = vlSelfRef.debug_rf
+        [9U];
+    vlSelfRef.top__DOT__debug_rf[0x0000000aU] = vlSelfRef.debug_rf
+        [0x0000000aU];
+    vlSelfRef.top__DOT__debug_rf[0x0000000bU] = vlSelfRef.debug_rf
+        [0x0000000bU];
+    vlSelfRef.top__DOT__debug_rf[0x0000000cU] = vlSelfRef.debug_rf
+        [0x0000000cU];
+    vlSelfRef.top__DOT__debug_rf[0x0000000dU] = vlSelfRef.debug_rf
+        [0x0000000dU];
+    vlSelfRef.top__DOT__debug_rf[0x0000000eU] = vlSelfRef.debug_rf
+        [0x0000000eU];
+    vlSelfRef.top__DOT__debug_rf[0x0000000fU] = vlSelfRef.debug_rf
+        [0x0000000fU];
+    vlSelfRef.top__DOT__debug_rf[0x00000010U] = vlSelfRef.debug_rf
+        [0x00000010U];
+    vlSelfRef.top__DOT__debug_rf[0x00000011U] = vlSelfRef.debug_rf
+        [0x00000011U];
+    vlSelfRef.top__DOT__debug_rf[0x00000012U] = vlSelfRef.debug_rf
+        [0x00000012U];
+    vlSelfRef.top__DOT__debug_rf[0x00000013U] = vlSelfRef.debug_rf
+        [0x00000013U];
+    vlSelfRef.top__DOT__debug_rf[0x00000014U] = vlSelfRef.debug_rf
+        [0x00000014U];
+    vlSelfRef.top__DOT__debug_rf[0x00000015U] = vlSelfRef.debug_rf
+        [0x00000015U];
+    vlSelfRef.top__DOT__debug_rf[0x00000016U] = vlSelfRef.debug_rf
+        [0x00000016U];
+    vlSelfRef.top__DOT__debug_rf[0x00000017U] = vlSelfRef.debug_rf
+        [0x00000017U];
+    vlSelfRef.top__DOT__debug_rf[0x00000018U] = vlSelfRef.debug_rf
+        [0x00000018U];
+    vlSelfRef.top__DOT__debug_rf[0x00000019U] = vlSelfRef.debug_rf
+        [0x00000019U];
+    vlSelfRef.top__DOT__debug_rf[0x0000001aU] = vlSelfRef.debug_rf
+        [0x0000001aU];
+    vlSelfRef.top__DOT__debug_rf[0x0000001bU] = vlSelfRef.debug_rf
+        [0x0000001bU];
+    vlSelfRef.top__DOT__debug_rf[0x0000001cU] = vlSelfRef.debug_rf
+        [0x0000001cU];
+    vlSelfRef.top__DOT__debug_rf[0x0000001dU] = vlSelfRef.debug_rf
+        [0x0000001dU];
+    vlSelfRef.top__DOT__debug_rf[0x0000001eU] = vlSelfRef.debug_rf
+        [0x0000001eU];
+    vlSelfRef.top__DOT__debug_rf[0x0000001fU] = vlSelfRef.debug_rf
+        [0x0000001fU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0U] = 
+        vlSelfRef.debug_rf[0U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[1U] = 
+        vlSelfRef.debug_rf[1U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[2U] = 
+        vlSelfRef.debug_rf[2U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[3U] = 
+        vlSelfRef.debug_rf[3U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[4U] = 
+        vlSelfRef.debug_rf[4U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[5U] = 
+        vlSelfRef.debug_rf[5U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[6U] = 
+        vlSelfRef.debug_rf[6U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[7U] = 
+        vlSelfRef.debug_rf[7U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[8U] = 
+        vlSelfRef.debug_rf[8U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[9U] = 
+        vlSelfRef.debug_rf[9U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000aU] 
+        = vlSelfRef.debug_rf[0x0000000aU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000bU] 
+        = vlSelfRef.debug_rf[0x0000000bU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000cU] 
+        = vlSelfRef.debug_rf[0x0000000cU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000dU] 
+        = vlSelfRef.debug_rf[0x0000000dU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000eU] 
+        = vlSelfRef.debug_rf[0x0000000eU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000000fU] 
+        = vlSelfRef.debug_rf[0x0000000fU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000010U] 
+        = vlSelfRef.debug_rf[0x00000010U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000011U] 
+        = vlSelfRef.debug_rf[0x00000011U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000012U] 
+        = vlSelfRef.debug_rf[0x00000012U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000013U] 
+        = vlSelfRef.debug_rf[0x00000013U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000014U] 
+        = vlSelfRef.debug_rf[0x00000014U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000015U] 
+        = vlSelfRef.debug_rf[0x00000015U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000016U] 
+        = vlSelfRef.debug_rf[0x00000016U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000017U] 
+        = vlSelfRef.debug_rf[0x00000017U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000018U] 
+        = vlSelfRef.debug_rf[0x00000018U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x00000019U] 
+        = vlSelfRef.debug_rf[0x00000019U];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001aU] 
+        = vlSelfRef.debug_rf[0x0000001aU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001bU] 
+        = vlSelfRef.debug_rf[0x0000001bU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001cU] 
+        = vlSelfRef.debug_rf[0x0000001cU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001dU] 
+        = vlSelfRef.debug_rf[0x0000001dU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001eU] 
+        = vlSelfRef.debug_rf[0x0000001eU];
+    vlSelfRef.top__DOT__my_WBU__DOT__debug_rf[0x0000001fU] 
+        = vlSelfRef.debug_rf[0x0000001fU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0U] 
+        = vlSelfRef.debug_rf[0U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[1U] 
+        = vlSelfRef.debug_rf[1U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[2U] 
+        = vlSelfRef.debug_rf[2U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[3U] 
+        = vlSelfRef.debug_rf[3U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[4U] 
+        = vlSelfRef.debug_rf[4U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[5U] 
+        = vlSelfRef.debug_rf[5U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[6U] 
+        = vlSelfRef.debug_rf[6U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[7U] 
+        = vlSelfRef.debug_rf[7U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[8U] 
+        = vlSelfRef.debug_rf[8U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[9U] 
+        = vlSelfRef.debug_rf[9U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000aU] 
+        = vlSelfRef.debug_rf[0x0000000aU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000bU] 
+        = vlSelfRef.debug_rf[0x0000000bU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000cU] 
+        = vlSelfRef.debug_rf[0x0000000cU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000dU] 
+        = vlSelfRef.debug_rf[0x0000000dU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000eU] 
+        = vlSelfRef.debug_rf[0x0000000eU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000000fU] 
+        = vlSelfRef.debug_rf[0x0000000fU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000010U] 
+        = vlSelfRef.debug_rf[0x00000010U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000011U] 
+        = vlSelfRef.debug_rf[0x00000011U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000012U] 
+        = vlSelfRef.debug_rf[0x00000012U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000013U] 
+        = vlSelfRef.debug_rf[0x00000013U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000014U] 
+        = vlSelfRef.debug_rf[0x00000014U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000015U] 
+        = vlSelfRef.debug_rf[0x00000015U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000016U] 
+        = vlSelfRef.debug_rf[0x00000016U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000017U] 
+        = vlSelfRef.debug_rf[0x00000017U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000018U] 
+        = vlSelfRef.debug_rf[0x00000018U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x00000019U] 
+        = vlSelfRef.debug_rf[0x00000019U];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001aU] 
+        = vlSelfRef.debug_rf[0x0000001aU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001bU] 
+        = vlSelfRef.debug_rf[0x0000001bU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001cU] 
+        = vlSelfRef.debug_rf[0x0000001cU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001dU] 
+        = vlSelfRef.debug_rf[0x0000001dU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001eU] 
+        = vlSelfRef.debug_rf[0x0000001eU];
+    vlSelfRef.top__DOT__my_WBU__DOT__GPR__DOT__debug_rf[0x0000001fU] 
+        = vlSelfRef.debug_rf[0x0000001fU];
     vlSelfRef.top__DOT__ALU_result = (((0x37U == (0x0000007fU 
                                                   & vlSelfRef.inst))
                                         ? 0U : ((0U 
@@ -316,7 +570,6 @@ void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) {
                                                    << 0x0000000cU) 
                                                   | (vlSelfRef.inst 
                                                      >> 0x00000014U))))));
-    vlSelfRef.out_pc = (vlSelfRef.pc - (IData)(0x80000000U));
     vlSelfRef.top__DOT__pc_next = ((IData)(4U) + vlSelfRef.pc);
 }
 

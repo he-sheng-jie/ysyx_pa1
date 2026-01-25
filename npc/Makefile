@@ -11,7 +11,7 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 
 # 设计文件
 VERILOG_SOURCES = ./vsrc/top.v
-CPP_SOURCES = ./csrc/main.cpp
+CPP_SOURCES = ./csrc/*.cpp
 
 
 default: $(BIN)

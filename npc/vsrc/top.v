@@ -7,13 +7,11 @@ module top(
   input clk,
   input [31:0] inst,
   output reg [31:0] pc,
-  output [31:0] out_pc,
   output [4:0] num, 
-  output [31:0] result
+  output [31:0] debug_rf [0:31]
 );
   //initial pc = 32'h00000000;
   initial pc = 32'h80000000 ;
-  assign out_pc = pc - 32'h80000000;
   reg [31:0] pc_next;
   always @(*) begin
     pc_next = (pc + 4) ;
@@ -82,7 +80,7 @@ WBU my_WBU (
   .rdata1 (rdata1),
   .rdata2 (rdata2),
   .pc_next  (pc_next),
-  .result (result)
+  .debug_rf (debug_rf)
 );
 
 
@@ -303,7 +301,7 @@ module WBU #(ADDR_WIDTH = 5, DATA_WIDTH = 32)(
   output [DATA_WIDTH-1:0] rdata1,
   output [DATA_WIDTH-1:0] rdata2,
   output reg [DATA_WIDTH-1:0]  pc,
-  output [DATA_WIDTH-1:0] result
+  output [DATA_WIDTH-1:0] debug_rf [0 : 2**ADDR_WIDTH-1] 
 );
 
 
@@ -316,7 +314,7 @@ RegisterFile GPR (
   .raddr2 (raddr2),
   .rdata1 (rdata1),
   .rdata2 (rdata2),
-  .result (result)
+  .debug_rf(debug_rf)
 );
 
 always @(posedge clk) begin
@@ -338,7 +336,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   input [ADDR_WIDTH-1:0] raddr2,
   output [DATA_WIDTH-1:0] rdata1,
   output [DATA_WIDTH-1:0] rdata2,
-  output [DATA_WIDTH-1:0] result
+  output [DATA_WIDTH-1:0] debug_rf [0 : 2**ADDR_WIDTH-1] 
 );
 
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
@@ -351,5 +349,6 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
 
   assign rdata1 = raddr1 == 0 ? 0 : rf[raddr1];
   assign rdata2 = raddr2 == 0 ? 0 : rf[raddr2];
-  assign result = rf[10];
+  assign debug_rf = rf;  
+
 endmodule

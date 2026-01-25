@@ -30,12 +30,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
     VL_IN(inst,31,0);
     VL_OUT(pc,31,0);
-    VL_OUT(out_pc,31,0);
-    VL_OUT(result,31,0);
     IData/*31:0*/ top__DOT__pc_next;
     IData/*31:0*/ top__DOT__ALU_result;
     IData/*31:0*/ top__DOT__pmemdata;
     IData/*31:0*/ __VactIterCount;
+    VL_OUT(debug_rf[32],31,0);
+    VlUnpacked<IData/*31:0*/, 32> top__DOT__debug_rf;
+    VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__debug_rf;
+    VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__GPR__DOT__debug_rf;
     VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__GPR__DOT__rf;
     VlUnpacked<QData/*63:0*/, 1> __VstlTriggered;
     VlUnpacked<QData/*63:0*/, 1> __VicoTriggered;
