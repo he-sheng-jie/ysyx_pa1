@@ -23,7 +23,7 @@ extern Vtop* top;
 extern bool is_break;
 extern uint32_t inst_now;
 extern uint8_t ROM[MEM_SIZE];
-extern uint8_t RAM[MEM_SIZE];
+// extern uint8_t RAM[MEM_SIZE];
 extern bool diff_check;
 
 uint32_t mem_read(uint32_t pc);

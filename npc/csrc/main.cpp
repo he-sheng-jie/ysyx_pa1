@@ -8,12 +8,12 @@
 #include "all.h"
 #include "sdb.h"
 
-#define RAM_BASE 0x80000000
+#define ROM_BASE 0x80000000
 #define romsize (128*1024*1024)
-#define ramsize (128*1024*1024)
+// #define ramsize (128*1024*1024)
 
 uint8_t ROM[romsize];
-uint8_t RAM[ramsize];
+// uint8_t RAM[ramsize];
 
 
 VerilatedContext* contextp = nullptr;
@@ -26,7 +26,7 @@ void mem_init(char *filepath)
 {
     // 初始化内存和寄存器
     memset(ROM, 0, romsize);
-    memset(RAM, 0, ramsize);
+    // memset(RAM, 0, ramsize);
     
     // 加载程序文件
     FILE *fp = fopen(filepath, "rb");
@@ -35,8 +35,8 @@ void mem_init(char *filepath)
     }
     ///home/he/E4/sum.bin
     size_t rom_read = fread(ROM, 1, romsize, fp);
-    rewind(fp);
-    size_t ram_read = fread(RAM, 1, ramsize, fp);
+    // rewind(fp);
+    // size_t ram_read = fread(RAM, 1, ramsize, fp);
     fclose(fp);
 
 
@@ -61,16 +61,17 @@ void mem_init(char *filepath)
 
 uint32_t mem_read(uint32_t pc)
 {
-  uint32_t inst = *(uint32_t *)&ROM[(pc - RAM_BASE) & 0x1fffffff];
+  uint32_t inst = *(uint32_t *)&ROM[(pc - ROM_BASE) & 0x7ffffff];
   return inst;
 }
 extern "C" int pmem_read(int raddr) {
   // 总是读取地址为`raddr & ~0x3u`的4字节返回
-  //printf("raddr=0x%x\n",raddr);
-  if(raddr == 0x20000000) {
+
+  if(false/*raddr == 0x20000000*/) {
     return (uint32_t)time(NULL) * 1000000;
   }
-  return *(uint32_t *)&RAM[(raddr &  ~0x3u & 0x1fffffff)];
+  uint32_t tmp = *(uint32_t *)&ROM[(raddr &  ~0x3u & 0x7ffffff)];
+  return tmp;
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
@@ -78,18 +79,16 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
   // `wmask`中每比特表示`wdata`中1个字节的掩码,
   // 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
   uint32_t aligned_addr = (waddr & ~0x3u);
-  //printf("waddr=0x%x  wdata = 0x%x wmask = 0x%x\n",waddr,wdata,wmask);
-  if (aligned_addr == 0x10000000) {
+  if (false/*aligned_addr == 0x10000000*/) {
         putchar((char)(wdata & 0xff));
   } else {
-      aligned_addr = aligned_addr & 0x1fffffff ;
+      aligned_addr = aligned_addr & 0x7ffffff;
       if((wmask & 0Xff) == 0xff){
-        *(uint32_t *)&RAM[aligned_addr] = wdata;
+        *(uint32_t *)&ROM[aligned_addr] = wdata;
       } else {
             for (int i = 0; i < 4; i++) {
-            if (wmask & (1 << i)) {
-                RAM[aligned_addr + i] = wdata & 0xFF;
-                break;
+            if (wmask & (1u << i)) {
+                ROM[aligned_addr + i] = wdata & 0xFF;
             }
         }
       }

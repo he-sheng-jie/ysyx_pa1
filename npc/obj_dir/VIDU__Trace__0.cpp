@@ -2,23 +2,23 @@
 // DESCRIPTION: Verilator output: Tracing implementation internals
 
 #include "verilated_vcd_c.h"
-#include "Vtop__Syms.h"
+#include "VIDU__Syms.h"
 
 
-void Vtop___024root__trace_chg_0_sub_0(Vtop___024root* vlSelf, VerilatedVcd::Buffer* bufp);
+void VIDU___024root__trace_chg_0_sub_0(VIDU___024root* vlSelf, VerilatedVcd::Buffer* bufp);
 
-void Vtop___024root__trace_chg_0(void* voidSelf, VerilatedVcd::Buffer* bufp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root__trace_chg_0\n"); );
+void VIDU___024root__trace_chg_0(void* voidSelf, VerilatedVcd::Buffer* bufp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    VIDU___024root__trace_chg_0\n"); );
     // Body
-    Vtop___024root* const __restrict vlSelf VL_ATTR_UNUSED = static_cast<Vtop___024root*>(voidSelf);
-    Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VIDU___024root* const __restrict vlSelf VL_ATTR_UNUSED = static_cast<VIDU___024root*>(voidSelf);
+    VIDU__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     if (VL_UNLIKELY(!vlSymsp->__Vm_activity)) return;
-    Vtop___024root__trace_chg_0_sub_0((&vlSymsp->TOP), bufp);
+    VIDU___024root__trace_chg_0_sub_0((&vlSymsp->TOP), bufp);
 }
 
-void Vtop___024root__trace_chg_0_sub_0(Vtop___024root* vlSelf, VerilatedVcd::Buffer* bufp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root__trace_chg_0_sub_0\n"); );
-    Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+void VIDU___024root__trace_chg_0_sub_0(VIDU___024root* vlSelf, VerilatedVcd::Buffer* bufp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    VIDU___024root__trace_chg_0_sub_0\n"); );
+    VIDU__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
     uint32_t* const oldp VL_ATTR_UNUSED = bufp->oldp(vlSymsp->__Vm_baseCode + 1);
@@ -293,11 +293,11 @@ void Vtop___024root__trace_chg_0_sub_0(Vtop___024root* vlSelf, VerilatedVcd::Buf
     bufp->chgBit(oldp+142,((0U == (vlSelfRef.inst >> 0x00000019U))));
 }
 
-void Vtop___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root__trace_cleanup\n"); );
+void VIDU___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    VIDU___024root__trace_cleanup\n"); );
     // Body
-    Vtop___024root* const __restrict vlSelf VL_ATTR_UNUSED = static_cast<Vtop___024root*>(voidSelf);
-    Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VIDU___024root* const __restrict vlSelf VL_ATTR_UNUSED = static_cast<VIDU___024root*>(voidSelf);
+    VIDU__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     vlSymsp->__Vm_activity = false;
     vlSymsp->TOP.__Vm_traceActivity[0U] = 0U;
     vlSymsp->TOP.__Vm_traceActivity[1U] = 0U;

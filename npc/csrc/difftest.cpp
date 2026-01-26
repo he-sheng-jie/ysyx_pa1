@@ -55,20 +55,21 @@ void print_reg_diff(const CPU_state *ref) {
         printf("\033[1;31m>>> Mismatch detected! Check highlighted lines.\033[0m\n");
     }
 
-    // 👇 新增：用黄色输出 pc_before（上一条指令的地址）
     printf("\033[1;33mpc_before = 0x%08x\033[0m\n", top->pc_before);
     printf("\n");
 }
 
 bool difftest_checkregs(CPU_state *ref_r) {
   int i;
-  for(i = 0;i < 32; i++){
+  for(i = 1;i < 32; i++){
     if(ref_r->gpr[i] != top->debug_rf[i]){ 
+                printf("%d\n",i);
         return false;
       }
   }
-  if(ref_r->pc != top->pc)
+  if(ref_r->pc != top->debug_rf[32])
     {
+        printf("1\n");
       return false;
     }
   return true;

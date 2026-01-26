@@ -128,7 +128,7 @@ void isa_watchpoint_display(void) {
   
   WP *current = head;
   while (current != NULL) {
-    printf("%u\t%s\t\t%u\n", 
+    printf("%u\t%s\t\t0x%x\n", 
            current->NO + 1, 
            current->expr, 
            current->value);

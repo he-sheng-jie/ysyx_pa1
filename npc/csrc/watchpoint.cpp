@@ -113,7 +113,7 @@ void watchpoint_display(void) {
 
   WP *current = head;
   while (current != nullptr) {
-    std::printf("%u\t%s\t\t%u\n",
+    std::printf("%u\t%s\t\t0x%x\n",
                 current->NO + 1,
                 current->expr,
                 static_cast<unsigned>(current->value));

@@ -3,14 +3,14 @@ NXDC_FILES = constr/top.nxdc
 INC_PATH ?=
 NVBOARD_HOME = /home/he/ysyx-workbench/nvboard
 VERILATOR = verilator
-VERILATOR_FLAGS =  --trace --cc --exe --build -j 0#-Wall#
+VERILATOR_FLAGS =  --trace --cc --exe --build -j 0  --top-module top#-Wall#
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 # 设计文件
-VERILOG_SOURCES = ./vsrc/top.v
+VERILOG_SOURCES = ./vsrc/*.v
 CPP_SOURCES = ./csrc/*.cpp
 
 

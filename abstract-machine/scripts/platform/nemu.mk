@@ -13,7 +13,7 @@ LDSCRIPTS += $(AM_HOME)/scripts/linker.ld
 LDFLAGS   += --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 LDFLAGS   += --gc-sections -e _start
 # NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
-NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt  -m $(shell dirname $(IMAGE).elf)/mem-log.txt  -e $(shell dirname $(IMAGE).elf)/recursion-riscv32-nemu.elf -b
+NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt  -m $(shell dirname $(IMAGE).elf)/mem-log.txt  -e $(shell dirname $(IMAGE).elf)/recursion-riscv32-nemu.elf #-b
 # NEMUFLAGS += 
 
 MAINARGS_MAX_LEN = 64

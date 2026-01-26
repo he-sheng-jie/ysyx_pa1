@@ -8,6 +8,12 @@
 #include "sdb.h"
 #include "difftest.h"
 #include "reg.h"
+bool watch_check = true;
+void continue_now(void){
+    watch_check = true;
+    diff_check = true;
+}
+
 void test_for_watchpoint_and_diff(void){
 #if DIFF_TEST
     difftest_step();
@@ -15,18 +21,19 @@ void test_for_watchpoint_and_diff(void){
 
 #if WATCHPOINT_TEST
     if(watchpoint_change_test()){
-            printf("触发监视点\n");
-            watchpoint_display();
-            break;
-        }
+        watch_check = false;
+        printf("触发监视点\n");
+        watchpoint_display();
+    }
 #endif  
 
 }
 void cpu_exec(uint32_t n){
 
-  for(int i = 0; i < n && is_break && diff_check; i++){
+  for(int i = 0; i < n && is_break && diff_check && watch_check; i++){
     //进行一次上升沿的模拟
     top->inst = mem_read(top->pc);
+    printf("pc=0x%x  inst=0x%x\n",top->pc,top->inst);
     top->clk = 0; top->eval();
     top->clk = 1; top->eval();
     test_for_watchpoint_and_diff();
@@ -140,6 +147,7 @@ bool parse_hex_arg(char *args, uint32_t *result) {
 
 
 static int cmd_c(char *args) {
+    continue_now();
     cpu_exec(-1);
     return 0;
 }
@@ -152,6 +160,7 @@ static int cmd_help(char *args);
 
 static int cmd_si(char *args) {
     int n = 0;
+    continue_now();
     if (string_to_int(args, &n) == 0) {
         cpu_exec(n);
     }

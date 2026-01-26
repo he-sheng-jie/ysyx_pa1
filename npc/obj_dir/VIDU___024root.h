@@ -1,20 +1,20 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Design internal header
-// See Vtop.h for the primary calling header
+// See VIDU.h for the primary calling header
 
-#ifndef VERILATED_VTOP___024ROOT_H_
-#define VERILATED_VTOP___024ROOT_H_  // guard
+#ifndef VERILATED_VIDU___024ROOT_H_
+#define VERILATED_VIDU___024ROOT_H_  // guard
 
 #include "verilated.h"
-class Vtop___024unit;
+class VIDU___024unit;
 
 
-class Vtop__Syms;
+class VIDU__Syms;
 
-class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
+class alignas(VL_CACHE_LINE_BYTES) VIDU___024root final {
   public:
     // CELLS
-    Vtop___024unit* __PVT____024unit;
+    VIDU___024unit* __PVT____024unit;
 
     // DESIGN SPECIFIC STATE
     VL_IN8(clk,0,0);
@@ -50,13 +50,13 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     VlUnpacked<CData/*0:0*/, 3> __Vm_traceActivity;
 
     // INTERNAL VARIABLES
-    Vtop__Syms* vlSymsp;
+    VIDU__Syms* vlSymsp;
     const char* vlNamep;
 
     // CONSTRUCTORS
-    Vtop___024root(Vtop__Syms* symsp, const char* namep);
-    ~Vtop___024root();
-    VL_UNCOPYABLE(Vtop___024root);
+    VIDU___024root(VIDU__Syms* symsp, const char* namep);
+    ~VIDU___024root();
+    VL_UNCOPYABLE(VIDU___024root);
 
     // INTERNAL METHODS
     void __Vconfigure(bool first);
