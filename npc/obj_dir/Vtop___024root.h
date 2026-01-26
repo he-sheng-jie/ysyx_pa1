@@ -18,6 +18,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
 
     // DESIGN SPECIFIC STATE
     VL_IN8(clk,0,0);
+    VL_IN8(rst,0,0);
     VL_OUT8(num,4,0);
     CData/*0:0*/ top__DOT__is_jalr_ok;
     CData/*0:0*/ top__DOT__is_add_ok;
@@ -28,14 +29,17 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     CData/*0:0*/ __VstlFirstIteration;
     CData/*0:0*/ __VicoFirstIteration;
     CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
+    CData/*0:0*/ __Vtrigprevexpr___TOP__rst__0;
     VL_IN(inst,31,0);
     VL_OUT(pc,31,0);
+    VL_OUT(pc_before,31,0);
+    IData/*31:0*/ top__DOT__pc_before_reg;
     IData/*31:0*/ top__DOT__pc_next;
     IData/*31:0*/ top__DOT__ALU_result;
     IData/*31:0*/ top__DOT__pmemdata;
     IData/*31:0*/ __VactIterCount;
-    VL_OUT(debug_rf[32],31,0);
-    VlUnpacked<IData/*31:0*/, 32> top__DOT__debug_rf;
+    VL_OUT(debug_rf[33],31,0);
+    VlUnpacked<IData/*31:0*/, 32> top__DOT____Vcellout__my_WBU__debug_rf;
     VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__debug_rf;
     VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__GPR__DOT__debug_rf;
     VlUnpacked<IData/*31:0*/, 32> top__DOT__my_WBU__DOT__GPR__DOT__rf;

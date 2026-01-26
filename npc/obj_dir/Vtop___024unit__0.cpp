@@ -39,3 +39,13 @@ void Vtop___024unit____Vdpiimwrap_break_test_TOP____024unit(CData/*0:0*/ is_ebre
     is_ebreak__Vcvt = is_ebreak;
     break_test(is_ebreak__Vcvt);
 }
+
+extern "C" void inst_get(int inst);
+
+void Vtop___024unit____Vdpiimwrap_inst_get_TOP____024unit(IData/*31:0*/ inst) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+        Vtop___024unit____Vdpiimwrap_inst_get_TOP____024unit\n"); );
+    // Body
+    int inst__Vcvt;
+    inst__Vcvt = inst;
+    inst_get(inst__Vcvt);
+}

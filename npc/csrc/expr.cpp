@@ -6,6 +6,7 @@
 #include <regex.h>
 #include "sdb.h"
 #include "all.h"
+#include "reg.h"
 
 // Token 类型定义
 enum {

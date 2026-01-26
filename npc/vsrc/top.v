@@ -2,24 +2,37 @@ import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(
   input int waddr, input int wdata, input byte wmask);
 import "DPI-C" function void break_test(input logic is_ebreak);
-
+import "DPI-C" function void inst_get(input int inst);
 module top(
   input clk,
   input [31:0] inst,
-  output reg [31:0] pc,
+  input rst, 
+  output [31:0] pc,
+  output [31:0] pc_before,
   output [4:0] num, 
-  output [31:0] debug_rf [0:31]
+  output [31:0] debug_rf [0:32]
 );
-  //initial pc = 32'h00000000;
-  initial pc = 32'h80000000 ;
+
+  assign debug_rf[32] = pc;
+
+  reg [31:0] pc_before_reg;
+  always @(posedge clk or posedge rst) begin
+  if (rst)
+    pc_before_reg <= 32'h00000000;
+  else
+    pc_before_reg <= pc;  
+  end
+
+  assign pc_before = pc_before_reg;
   reg [31:0] pc_next;
   always @(*) begin
-    pc_next = (pc + 4) ;
+    pc_next = (pc + 4);
   end
  
   reg is_ebreak;
   always @(*) begin
     break_test(is_ebreak);
+    inst_get(inst);
   end
   wire wen;
   reg [31:0] wdata;
@@ -70,6 +83,7 @@ IDU my_IDU(
 WBU my_WBU (
   .clk   (clk),
   .pc   (pc),
+  .rst  (rst),
   .ALU_result  (ALU_result),
   .wdata (wdata),
   .waddr (waddr),
@@ -80,7 +94,7 @@ WBU my_WBU (
   .rdata1 (rdata1),
   .rdata2 (rdata2),
   .pc_next  (pc_next),
-  .debug_rf (debug_rf)
+  .debug_rf (debug_rf[0:31])
 );
 
 
@@ -290,6 +304,7 @@ endmodule
 
 module WBU #(ADDR_WIDTH = 5, DATA_WIDTH = 32)(
   input clk,
+  input rst,
   input [DATA_WIDTH-1:0] pc_next,
   input [DATA_WIDTH-1:0] wdata,
   input [DATA_WIDTH-1:0] ALU_result,
@@ -317,9 +332,14 @@ RegisterFile GPR (
   .debug_rf(debug_rf)
 );
 
-always @(posedge clk) begin
-  if(is_jalr_ok) pc <= (ALU_result & 32'hFFFFFFFC);
-  else  pc <= pc_next ;
+always @(posedge clk or posedge rst) begin
+  if (rst) begin
+    pc <= 32'h80000000;
+  end else if (is_jalr_ok) begin
+    pc <= (ALU_result & 32'hFFFFFFFC);
+  end else begin
+    pc <= pc_next;
+  end
 end
 
 endmodule 
@@ -339,7 +359,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   output [DATA_WIDTH-1:0] debug_rf [0 : 2**ADDR_WIDTH-1] 
 );
 
-  reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
+  reg [DATA_WIDTH-1:0] rf [0:2**ADDR_WIDTH-1];
 
   initial rf[0] = 0;
 

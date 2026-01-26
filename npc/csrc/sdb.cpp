@@ -6,20 +6,30 @@
 #include <cstdlib>   // not strictly needed, but safe
 #include "all.h"
 #include "sdb.h"
+#include "difftest.h"
+#include "reg.h"
+void test_for_watchpoint_and_diff(void){
+#if DIFF_TEST
+    difftest_step();
+#endif
 
+#if WATCHPOINT_TEST
+    if(watchpoint_change_test()){
+            printf("触发监视点\n");
+            watchpoint_display();
+            break;
+        }
+#endif  
+
+}
 void cpu_exec(uint32_t n){
 
-  for(int i = 0; i < n && is_break; i++){
+  for(int i = 0; i < n && is_break && diff_check; i++){
     //进行一次上升沿的模拟
     top->inst = mem_read(top->pc);
-    printf("i=%d  pc=0X%x  inst=0X%x\n", i,top->pc, top->inst);
     top->clk = 0; top->eval();
     top->clk = 1; top->eval();
-    if(watchpoint_change_test()){
-        printf("触发监视点\n");
-        watchpoint_display();
-        break;
-    }
+    test_for_watchpoint_and_diff();
   }
 }
 
@@ -126,59 +136,8 @@ bool parse_hex_arg(char *args, uint32_t *result) {
     *result = value;
     return true;
 }
-const char *regs[] = {
-  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
-  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
-  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
-};
 
-void reg_display(void){
-    for(int i = 0;i <31;i++)
-        printf("%s:data:%d  0x%x\n",regs[i],top->debug_rf[i],top->debug_rf[i]);
-}
 
-static bool reg_name_equal(const char *input, const char *expected) {
-    while (*input && *expected) {
-        char c1 = (*input >= 'A' && *input <= 'Z') ? *input + 32 : *input;
-        char c2 = (*expected >= 'A' && *expected <= 'Z') ? *expected + 32 : *expected;
-        if (c1 != c2) return false;
-        input++;
-        expected++;
-    }
-    return *input == '\0' && *expected == '\0';
-}
-
-uint32_t reg_str2val(const char *name, bool *success) {
-    if (!name || !success) {
-        if (success) *success = false;
-        return 0;
-    }
-
-    if (name[0] == 'x' || name[0] == 'X') {
-        char *end;
-        long idx = strtol(name + 1, &end, 10);
-        if (*end == '\0' && idx >= 0 && idx < 32) {
-            *success = true;
-            if (idx == 0) return 0;
-            return top->debug_rf[idx];
-        }
-    }
-
-    for (int i = 0; i < 32; i++) {
-        if (reg_name_equal(name, regs[i])) {
-            *success = true;
-            if (i == 0) return 0;
-            return top->debug_rf[i];
-        }
-    }
-    if (reg_name_equal(name, "pc")) {
-        *success = true;
-        return top->pc;
-    }
-    *success = false;
-    return 0;
-}
 
 static int cmd_c(char *args) {
     cpu_exec(-1);
@@ -357,4 +316,7 @@ void sdb_loop(void) {
 void sdb_init(void){
     init_regex();
     init_wp_pool();
+#if DIFF_TEST
+  init_difftest("/home/he/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so", MEM_SIZE, 0);
+#endif
 }

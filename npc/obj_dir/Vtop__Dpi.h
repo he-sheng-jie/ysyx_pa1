@@ -18,6 +18,8 @@ extern "C" {
     // DPI IMPORTS
     // DPI import at vsrc/top.v:4:30
     extern void break_test(svLogic is_ebreak);
+    // DPI import at vsrc/top.v:5:30
+    extern void inst_get(int inst);
     // DPI import at vsrc/top.v:1:29
     extern int pmem_read(int raddr);
     // DPI import at vsrc/top.v:2:30

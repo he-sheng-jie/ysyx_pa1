@@ -6,6 +6,7 @@
 #include <time.h>
 #include "Vtop.h"
 #include "all.h"
+#include "sdb.h"
 
 #define RAM_BASE 0x80000000
 #define romsize (128*1024*1024)
@@ -19,6 +20,7 @@ VerilatedContext* contextp = nullptr;
 Vtop* top = nullptr;
 
 bool is_break = true;
+uint32_t inst_now;
 
 void mem_init(char *filepath)
 {
@@ -38,21 +40,21 @@ void mem_init(char *filepath)
     fclose(fp);
 
 
-    // --- 插入：将 pc=0x1220 处的 halt (0x00020067) 替换为 ebreak (0x00100073) ---
-    uint32_t ebreak_inst = 0x00100073;
-    uint32_t addr = 0x228;  // 要修改的 sum.bin 的 ROM 地址
-    // // uint32_t addr = 0x1220;  // 要修改的 mem.bin 的 ROM 地址
+    // // --- 插入：将 pc=0x1220 处的 halt (0x00020067) 替换为 ebreak (0x00100073) ---
+    // uint32_t ebreak_inst = 0x00100073;
+    // uint32_t addr = 0x228;  // 要修改的 sum.bin 的 ROM 地址
+    // // // uint32_t addr = 0x1220;  // 要修改的 mem.bin 的 ROM 地址
 
-    // 确保地址在 ROM 范围内（可选安全检查）
-    if (addr + 3 < romsize) {
-        // 小端序写入：逐字节写入 ebreak 指令
-        ROM[addr + 0] = (ebreak_inst >> 0)  & 0xFF;
-        ROM[addr + 1] = (ebreak_inst >> 8)  & 0xFF;
-        ROM[addr + 2] = (ebreak_inst >> 16) & 0xFF;
-        ROM[addr + 3] = (ebreak_inst >> 24) & 0xFF;
-    } else {
-        printf("警告：地址 0x%x 超出 ROM 范围，无法插入 ebreak。\n", addr);
-    }
+    // // 确保地址在 ROM 范围内（可选安全检查）
+    // if (addr + 3 < romsize) {
+    //     // 小端序写入：逐字节写入 ebreak 指令
+    //     ROM[addr + 0] = (ebreak_inst >> 0)  & 0xFF;
+    //     ROM[addr + 1] = (ebreak_inst >> 8)  & 0xFF;
+    //     ROM[addr + 2] = (ebreak_inst >> 16) & 0xFF;
+    //     ROM[addr + 3] = (ebreak_inst >> 24) & 0xFF;
+    // } else {
+    //     printf("警告：地址 0x%x 超出 ROM 范围，无法插入 ebreak。\n", addr);
+    // }
 }
 
 
@@ -103,13 +105,27 @@ extern "C" void break_test(bool is_ebreak)
     is_break = true;
 }
 
-
+extern "C" void inst_get(int inst)
+{
+    inst_now = inst;
+}
 
 int main(int argc, char** argv) {
   mem_init(argv[1]);
   contextp = new VerilatedContext;
   contextp->commandArgs(argc, argv);
   top = new Vtop{contextp};
+  
+
+  top->clk = 0;
+  top->rst = 1;  
+  top->eval();
+  
+  top->clk = 1;
+  top->eval();
+  
+  top->rst = 0; 
+  top->eval();
   sdb_init();
   sdb_loop();
 

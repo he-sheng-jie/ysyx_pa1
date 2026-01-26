@@ -1,4 +1,5 @@
 #include "sdb.h"
+#include "reg.h"
 #include <cstring>   // for strncpy
 #include <cstdio>    // for printf
 #include <cassert>   // for assert

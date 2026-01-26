@@ -11,9 +11,11 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     : VerilatedModel{*_vcontextp__}
     , vlSymsp{new Vtop__Syms(contextp(), _vcname__, this)}
     , clk{vlSymsp->TOP.clk}
+    , rst{vlSymsp->TOP.rst}
     , num{vlSymsp->TOP.num}
     , inst{vlSymsp->TOP.inst}
     , pc{vlSymsp->TOP.pc}
+    , pc_before{vlSymsp->TOP.pc_before}
     , debug_rf{vlSymsp->TOP.debug_rf}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , rootp{&(vlSymsp->TOP)}
