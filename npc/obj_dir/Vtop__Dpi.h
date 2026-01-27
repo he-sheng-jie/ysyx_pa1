@@ -21,7 +21,7 @@ extern "C" {
     // DPI import at vsrc/top.v:5:30
     extern void inst_get(int inst);
     // DPI import at vsrc/top.v:1:29
-    extern int pmem_read(int raddr);
+    extern int pmem_read(int raddr, char rmask);
     // DPI import at vsrc/top.v:2:30
     extern void pmem_write(int waddr, int wdata, char wmask);
 

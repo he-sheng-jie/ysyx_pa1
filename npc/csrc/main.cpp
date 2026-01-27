@@ -64,13 +64,21 @@ uint32_t mem_read(uint32_t pc)
   uint32_t inst = *(uint32_t *)&ROM[(pc - ROM_BASE) & 0x7ffffff];
   return inst;
 }
-extern "C" int pmem_read(int raddr) {
+extern "C" int pmem_read(int raddr,char rmask) {
   // 总是读取地址为`raddr & ~0x3u`的4字节返回
-
+  uint32_t tmp;
   if(false/*raddr == 0x20000000*/) {
     return (uint32_t)time(NULL) * 1000000;
   }
-  uint32_t tmp = *(uint32_t *)&ROM[(raddr &  ~0x3u & 0x7ffffff)];
+  if(rmask == 0x1){
+    tmp = ROM[(raddr & 0x7ffffff)];
+  } else if(rmask == 0x2){
+    tmp = *(uint16_t *)&ROM[(raddr & 0xfffffffe & 0x7ffffff)];
+  } else if(rmask == 0xff){
+    tmp = *(uint32_t *)&ROM[(raddr & 0xfffffffc & 0x7ffffff)];
+  } else {
+    tmp = *(uint32_t *)&ROM[(raddr & 0xfffffffc & 0x7ffffff)];
+  } 
   return tmp;
 }
 
@@ -79,7 +87,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
   // `wmask`中每比特表示`wdata`中1个字节的掩码,
   // 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
   uint32_t aligned_addr = (waddr & ~0x3u);
-  if (false/*aligned_addr == 0x10000000*/) {
+  if (aligned_addr == 0x10000000) {
         putchar((char)(wdata & 0xff));
   } else {
       aligned_addr = aligned_addr & 0x7ffffff;
@@ -89,6 +97,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
             for (int i = 0; i < 4; i++) {
             if (wmask & (1u << i)) {
                 ROM[aligned_addr + i] = wdata & 0xFF;
+                wdata = wdata >> 8;
             }
         }
       }
