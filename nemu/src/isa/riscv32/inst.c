@@ -22,6 +22,8 @@
 #define Mr vaddr_read
 #define Mw vaddr_write
 
+
+
 enum {
   TYPE_I, TYPE_U, TYPE_S,
   TYPE_N, TYPE_J, TYPE_R, 
@@ -55,9 +57,10 @@ enum {
 } while(0)
 
 
-static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int *rd, int *rs_1, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst;
   int rs1 = BITS(i, 19, 15);
+  *rs_1 = rs1;
   int rs2 = BITS(i, 24, 20);
   *rd     = BITS(i, 11, 7);
   switch (type) {
@@ -72,14 +75,27 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
+static inline int csr_index(uint32_t imm) {
+  switch (imm) {
+    case 0x305: return 0;  // mtvec
+    case 0x341: return 1;  // mepc
+    case 0x342: return 2;  // mcause
+    case 0x300: return 3;  // mstatus
+    default:
+      panic("Unsupported CSR: 0x%x", imm);
+      return -1;
+  }
+}
+
 static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
   int rd = 0; \
+  int rs_1 = 0; \
   word_t src1 = 0, src2 = 0, imm = 0; \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+  decode_operand(s, &rd, &rs_1, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
 
@@ -161,8 +177,41 @@ static int decode_exec(Decode *s) {
                                                                   R(rd) = (uint32_t)src1 / (uint32_t)src2;
                                                                 });
 
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, I,
+    int idx = csr_index(imm);
+    uint32_t old_val = cpu.csr[idx];
+    if (rs_1 != 0)
+      cpu.csr[idx] = (uint32_t)src1;   
+    R(rd) = old_val
+  );
+
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, 
+    int idx = csr_index(imm);
+    uint32_t old_val = cpu.csr[idx];
+    if (rs_1 != 0)
+      cpu.csr[idx] |= (uint32_t)src1;
+    R(rd) = old_val
+    );
+
+  INSTPAT("??????? ????? ????? 011 ????? 11100 11", csrrc  , I, 
+    int idx = csr_index(imm);
+    uint32_t old_val = cpu.csr[idx];
+    if (rs_1 != 0)
+      cpu.csr[idx] &= ~src1; 
+    R(rd) = old_val
+  );
+  
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, s->dnpc = isa_raise_intr(1,s->pc + 4));
+
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , R, s->dnpc = cpu.csr[1]);
+
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
+
+
+
+
+
   INSTPAT_END();
 
   R(0) = 0; // reset $zero to 0
