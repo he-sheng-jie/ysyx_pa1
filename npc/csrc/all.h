@@ -9,7 +9,7 @@
 #define I_TRACE 0
 #define M_TRACE 0
 #define F_TRACE 0
-#define DIFF_TEST 1
+#define DIFF_TEST 0
 
 #define MEM_SIZE (128 * 1024 * 1024)
 

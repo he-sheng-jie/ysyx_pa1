@@ -10,7 +10,11 @@ module top(
   output reg [31:0] pc,
   output [31:0] pc_before,
   output [4:0] num, 
-  output [31:0] debug_rf [0:32]  //这个是用于暴露寄存器和PC
+  output [31:0] debug_rf [0:32],  //这个是用于暴露寄存器和PC
+  output [31:0] my_mtvec,
+  output [31:0] my_mepc,
+  output [31:0] my_mcause,
+  output [31:0] my_mstatus
 );
 
   assign debug_rf[32] = pc;
@@ -70,6 +74,9 @@ RegisterFile GPR (
   .rdata2 (rdata2),
   .debug_rf(debug_rf[0:31])
 );
+
+
+
 wire mem_to_reg;
 wire reg [7:0] mem_to_reg_mask;
 
@@ -108,18 +115,112 @@ CU my_CU(
   .reg_to_mem_data  (reg_to_mem_data),
   .mem_to_reg  (mem_to_reg),
   .mem_to_reg_mask  (mem_to_reg_mask),
+
+  .csr_to_reg_en(csr_w_en),
+  .csr_to_reg_data(csr_tmpdata),
   .is_ebreak  (is_ebreak)
 );
 
 
+reg [31:0] mcycle;
+reg [31:0] mcycleh;
+reg [31:0] mvendorid;
+reg [31:0] marchid;
+reg [31:0] mstatus;
+reg [31:0] mepc;
+reg [31:0] mcause;
+reg [31:0] mtvec;
+
+assign my_mepc = mepc;
+assign my_mstatus = mstatus;
+assign my_mcause = mcause;
+assign my_mtvec = mtvec;
+
+wire csr_w_en;
+assign csr_w_en = (opcode == 7'b1110011) && (funct3 != 3'b0);
+
+wire is_ecall = (inst == 32'h00000073);
+wire is_mret = (inst == 32'h30200073);
+
+wire [31:0]csr_no;
+assign csr_no = imm_i;
+
+wire [31:0]csr_cdata;
+assign csr_cdata = (funct3[2]) ? {27'h0,inst[19:15]}:rdata1;
+wire [31:0]csr_wdata;
+reg [31:0]csr_tmpdata;
+always @(*) begin
+    case (csr_no)
+        32'h300: csr_tmpdata = mstatus;   
+        32'h305: csr_tmpdata = mtvec;    
+        32'h341: csr_tmpdata = mepc;     
+        32'h342: csr_tmpdata = mcause;    
+        32'hF11: csr_tmpdata = mvendorid;      
+        32'hF12: csr_tmpdata = marchid;     
+        32'hB00: csr_tmpdata = mcycle;     
+        32'hB80: csr_tmpdata = mcycleh; 
+        default: csr_tmpdata = 32'h0;     
+    endcase
+end
+
+CSR_ALU my_CSR_ALU(
+  .data1(csr_tmpdata),
+  .data2(csr_cdata),
+  .funct(funct3[1:0]),
+  .csrdata(csr_wdata)
+);
+
+reg mcycle_write_en;
+reg mcycleh_write_en;
+
+assign mcycle_write_en  = csr_w_en && (csr_no == 32'hB00);
+assign mcycleh_write_en = csr_w_en && (csr_no == 32'hB80);
 
 
 always @(posedge clk or posedge rst) begin
   if(rst) begin
     pc <= 32'h80000000;
+    mcycle <= 32'h0;
+    mcycleh <= 32'h0;
+    mvendorid <= 32'h79737978;
+    marchid <= 32'h18ce196;
+    mstatus <= 32'h0;
+    mepc <= 32'h0;
+    mcause <= 32'h0;
+    mtvec <= 32'h0;
   end
   else begin
-    pc <= pc_next;
+    if(is_mret) begin
+      pc <= mepc;
+      mcause <= mcause;
+      mepc <= mepc;
+      mstatus <= mstatus;
+    end
+    else if(is_ecall) begin
+      pc <= mtvec;
+      mcause <= 32'hb;
+      mepc <= pc;
+      mstatus <= 32'h1800;
+    end
+    else begin
+      pc <= pc_next;
+      mepc    <= (csr_w_en && (csr_no == 32'h341)) ? csr_wdata : mepc;
+      mcause  <= (csr_w_en && (csr_no == 32'h342)) ? csr_wdata : mcause;
+      mstatus <= (csr_w_en && (csr_no == 32'h300)) ? csr_wdata : mstatus;
+    end
+        if (mcycle_write_en)
+            mcycle <= csr_wdata;
+        else
+            mcycle <= mcycle + 1;
+
+        if (mcycleh_write_en) begin
+            mcycleh <= csr_wdata;
+        end else if (!mcycle_write_en && mcycle == 32'hFFFFFFFF) begin
+            mcycleh <= mcycleh + 1;
+        end
+    mtvec   <= (csr_w_en && (csr_no == 32'h305)) ? csr_wdata : mtvec;
+    mvendorid <= 32'h79737978;
+    marchid <= 32'h18ce196;  
     break_test(is_ebreak);
   end
 end

@@ -2,29 +2,39 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+// 最大输出缓冲区大小（用于临时存储数字）
+#define MAX_NUM_BUF 32
+
 typedef struct {
   char *buf;          // 输出缓冲区（若 to_console == false）
-  int count;          // 已输出字符数
+  size_t count;       // 已输出字符数
+  size_t max_size;    // 最大输出大小（0 表示无限制）
   bool to_console;    // true: 输出到 putch; false: 输出到 buf
 } output_ctx_t;
 
 static void out_char(output_ctx_t *ctx, char c) {
+  // 检查是否达到最大大小限制
+  if (ctx->max_size > 0 && ctx->count >= ctx->max_size - 1) {
+    return; // 达到上限，不再输出
+  }
+  
   if (ctx->to_console) {
     putch(c);
   } else {
     if (ctx->buf) {
       ctx->buf[ctx->count] = c;
     }
-    ctx->count++;
   }
+  ctx->count++;
 }
 
 // 将无符号整数按指定进制输出到 ctx
-static void print_uint(output_ctx_t *ctx, unsigned int val, int base, bool uppercase) {
-  char tmp[32];
+static void print_uint(output_ctx_t *ctx, uint64_t val, int base, bool uppercase) {
+  char tmp[MAX_NUM_BUF];
   int i = 0;
 
   if (val == 0) {
@@ -57,43 +67,76 @@ static int vprintf_internal(output_ctx_t *ctx, const char *fmt, va_list ap) {
 
     if (*f == '\0') break; // 防止格式串以 % 结尾
 
+    // 处理 %% 
     if (*f == '%') {
       out_char(ctx, '%');
       f++;
       continue;
     }
 
+    // 解析长度修饰符
+    bool is_long = false;
+    bool is_longlong = false;
+    
+    if (*f == 'l') {
+      is_long = true;
+      f++;
+      if (*f == 'l') {
+        is_longlong = true;
+        is_long = false; // ll 优先于 l
+        f++;
+      }
+    }
+
     // 处理格式符
     if (*f == 'd' || *f == 'i') {
-      int val = va_arg(ap, int);
+      int64_t val;
+      if (is_longlong) {
+        val = va_arg(ap, long long);
+      } else if (is_long) {
+        val = va_arg(ap, long);
+      } else {
+        val = va_arg(ap, int);
+      }
+      
       if (val < 0) {
         out_char(ctx, '-');
-        // 安全计算绝对值：利用无符号算术
-        unsigned int uval = (unsigned int)(-(unsigned int)val); // 注意：这里依赖无符号回绕
-        // 更严谨的方式（避免对 int 取负）：
-        // unsigned int uval = (val == INT_MIN) ? (unsigned int)INT_MIN : (unsigned int)(-val);
-        // 但我们用通用技巧：
-        if (val != 0) {
-          uval = 0U - (unsigned int)val; // 定义良好的无符号减法
-        } else {
-          uval = 0;
-        }
+        // 安全处理 INT64_MIN
+        uint64_t uval = (uint64_t)(-val); // 对于 INT64_MIN，-val 在 unsigned 中是定义良好的
         print_uint(ctx, uval, 10, false);
       } else {
-        print_uint(ctx, (unsigned int)val, 10, false);
+        print_uint(ctx, (uint64_t)val, 10, false);
       }
     }
     else if (*f == 'u') {
-      unsigned int val = va_arg(ap, unsigned int);
+      uint64_t val;
+      if (is_longlong) {
+        val = va_arg(ap, unsigned long long);
+      } else if (is_long) {
+        val = va_arg(ap, unsigned long);
+      } else {
+        val = va_arg(ap, unsigned int);
+      }
       print_uint(ctx, val, 10, false);
     }
-    else if (*f == 'x') {
-      unsigned int val = va_arg(ap, unsigned int);
-      print_uint(ctx, val, 16, false);
+    else if (*f == 'x' || *f == 'X') {
+      uint64_t val;
+      if (is_longlong) {
+        val = va_arg(ap, unsigned long long);
+      } else if (is_long) {
+        val = va_arg(ap, unsigned long);
+      } else {
+        val = va_arg(ap, unsigned int);
+      }
+      bool uppercase = (*f == 'X');
+      print_uint(ctx, val, 16, uppercase);
     }
-    else if (*f == 'X') {
-      unsigned int val = va_arg(ap, unsigned int);
-      print_uint(ctx, val, 16, true);
+    else if (*f == 'p') {
+      // 指针总是以 16 进制输出，带 0x 前缀
+      uintptr_t val = va_arg(ap, uintptr_t);
+      out_char(ctx, '0');
+      out_char(ctx, 'x');
+      print_uint(ctx, val, 16, false);
     }
     else if (*f == 'c') {
       int val = va_arg(ap, int);
@@ -114,7 +157,7 @@ static int vprintf_internal(output_ctx_t *ctx, const char *fmt, va_list ap) {
     f++;
   }
 
-  return ctx->count;
+  return (int)ctx->count;
 }
 
 // ==================== Public API ====================
@@ -122,7 +165,7 @@ static int vprintf_internal(output_ctx_t *ctx, const char *fmt, va_list ap) {
 int printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  output_ctx_t ctx = { .buf = NULL, .count = 0, .to_console = true };
+  output_ctx_t ctx = { .buf = NULL, .count = 0, .max_size = 0, .to_console = true };
   int ret = vprintf_internal(&ctx, fmt, ap);
   va_end(ap);
   return ret;
@@ -131,7 +174,7 @@ int printf(const char *fmt, ...) {
 int sprintf(char *str, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
-  output_ctx_t ctx = { .buf = str, .count = 0, .to_console = false };
+  output_ctx_t ctx = { .buf = str, .count = 0, .max_size = 0, .to_console = false };
   int ret = vprintf_internal(&ctx, format, ap);
   // 添加终止符
   if (str) str[ctx.count] = '\0';
@@ -140,20 +183,39 @@ int sprintf(char *str, const char *format, ...) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  output_ctx_t ctx = { .buf = out, .count = 0, .to_console = false };
+  output_ctx_t ctx = { .buf = out, .count = 0, .max_size = 0, .to_console = false };
   int ret = vprintf_internal(&ctx, fmt, ap);
   if (out) out[ctx.count] = '\0';
   return ret;
 }
 
-// 暂未实现带长度限制的版本
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  // TODO: 实现时需在 out_char 中检查 count < n-1
-  panic("snprintf not implemented");
+  if (n == 0) return 0;
+  
+  va_list ap;
+  va_start(ap, fmt);
+  output_ctx_t ctx = { .buf = out, .count = 0, .max_size = n, .to_console = false };
+  int ret = vprintf_internal(&ctx, fmt, ap);
+  // 添加终止符（确保不越界）
+  if (out) {
+    size_t term_pos = (ctx.count < n) ? ctx.count : n - 1;
+    out[term_pos] = '\0';
+  }
+  va_end(ap);
+  return ret;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  panic("vsnprintf not implemented");
+  if (n == 0) return 0;
+  
+  output_ctx_t ctx = { .buf = out, .count = 0, .max_size = n, .to_console = false };
+  int ret = vprintf_internal(&ctx, fmt, ap);
+  // 添加终止符（确保不越界）
+  if (out) {
+    size_t term_pos = (ctx.count < n) ? ctx.count : n - 1;
+    out[term_pos] = '\0';
+  }
+  return ret;
 }
 
 #endif

@@ -16,6 +16,10 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , inst{vlSymsp->TOP.inst}
     , pc{vlSymsp->TOP.pc}
     , pc_before{vlSymsp->TOP.pc_before}
+    , my_mtvec{vlSymsp->TOP.my_mtvec}
+    , my_mepc{vlSymsp->TOP.my_mepc}
+    , my_mcause{vlSymsp->TOP.my_mcause}
+    , my_mstatus{vlSymsp->TOP.my_mstatus}
     , debug_rf{vlSymsp->TOP.debug_rf}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , rootp{&(vlSymsp->TOP)}

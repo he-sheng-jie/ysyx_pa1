@@ -12,6 +12,8 @@ module CU(
     input [2:0] funct3,
     input [6:0] funct7,
     input [31:0] mem_read_data,
+    input  csr_to_reg_en, 
+    input  [31:0] csr_to_reg_data,
 
     output wen,
     output [31:0] wdata,
@@ -136,7 +138,7 @@ assign  is_i_r = (opcode == 7'b0010011);
 assign  is_jalr = (opcode == 7'b1100111) && (funct3 == 3'b0);
 
 assign wen = is_lui || is_auipc || mem_to_reg || 
-            is_jal || is_r|| is_i_r || is_jalr;
+            is_jal || is_r|| is_i_r || is_jalr || csr_to_reg_en;
 
 assign  is_alu = is_i_r || is_r;
 
@@ -200,6 +202,7 @@ assign wdata =
     is_auipc            ? (pc + imm_u) :
     is_alu              ? alu_result :
     is_jal || is_jalr   ? (pc + 32'h4) :
+    csr_to_reg_en       ? csr_to_reg_data :
                             32'h0;
 
 endmodule

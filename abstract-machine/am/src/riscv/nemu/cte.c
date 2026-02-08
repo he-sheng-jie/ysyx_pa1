@@ -5,25 +5,10 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-  printf("\n=== EXCEPTION CONTEXT DUMP ===\n");
-  printf("mepc   = 0x%x\n", c->mepc);
-  printf("mcause = 0x%x (", c->mcause);
-  if (c->mcause == 7) printf("ecall/Environment Call)\n");
-  else if (c->mcause == 3) printf("breakpoint/ebreak)\n");
-  else printf("unknown)\n");
-  printf("mstatus= 0x%x\n", c->mstatus);
-  
-  printf("\nRegisters:\n");
-  for (int i = 0; i < NR_REGS; i++) {
-    if (i % 4 == 0) printf("  ");
-    printf("x%d=0x%x ", i, c->gpr[i]);
-    if (i % 4 == 3) printf("\n");
-  }
-  printf("================================\n\n");
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 0x1:ev.event = EVENT_YIELD; break;
+      case 11:ev.event = EVENT_YIELD;c->mepc += 4; break;
       default: ev.event = EVENT_ERROR; break;
     }
 
@@ -46,9 +31,14 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
-}
+  Context *ctx = (Context *)(kstack.end - 140);
+  ctx->gpr[10] = (uintptr_t)arg;  
+  ctx->mepc = (uintptr_t)entry;     
+  ctx->gpr[2] = (uintptr_t)kstack.end; 
+  ctx->mstatus = 0x00001800; 
 
+  return ctx;
+}
 void yield() {
 #ifdef __riscv_e
   asm volatile("li a5, -1; ecall");
@@ -62,4 +52,11 @@ bool ienabled() {
 }
 
 void iset(bool enable) {
+  if (enable) {
+    // 开启中断：设置 mstatus.MIE = 1
+    asm volatile("csrs mstatus, %0" :: "r"(0) : "memory");
+  } else {
+    // 关闭中断：设置 mstatus.MIE = 0  
+    asm volatile("csrc mstatus, %0" :: "r"(0) : "memory");
+  }
 }

@@ -26,17 +26,13 @@ void mem_init(char *filepath)
 {
     // 初始化内存和寄存器
     memset(ROM, 0, romsize);
-    // memset(RAM, 0, ramsize);
     
     // 加载程序文件
     FILE *fp = fopen(filepath, "rb");
     if(!fp) {
         printf("无法打开文件: %s\n",filepath);
     }
-    ///home/he/E4/sum.bin
     size_t rom_read = fread(ROM, 1, romsize, fp);
-    // rewind(fp);
-    // size_t ram_read = fread(RAM, 1, ramsize, fp);
     fclose(fp);
 
 
@@ -88,7 +84,8 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
   // 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
   uint32_t aligned_addr = (waddr & ~0x3u);
   if (aligned_addr == 0x10000000) {
-        putchar((char)(wdata & 0xff));
+    putchar((char)(wdata & 0xff));
+    fflush(stdout); 
   } else {
       aligned_addr = aligned_addr & 0x7ffffff;
       if((wmask & 0Xff) == 0xff){

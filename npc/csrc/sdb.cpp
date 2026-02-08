@@ -33,7 +33,7 @@ void cpu_exec(uint32_t n){
   for(int i = 0; i < n && is_break && diff_check && watch_check; i++){
     //进行一次上升沿的模拟
     top->inst = mem_read(top->pc);
-    printf("pc=0x%x  inst=0x%x\n",top->pc,top->inst);
+    //printf("pc=0x%x  inst=0x%x\n",top->pc,top->inst);
     top->clk = 0; top->eval();
     top->clk = 1; top->eval();
     test_for_watchpoint_and_diff();
@@ -268,6 +268,8 @@ static int cmd_help(char *args) {
 }
 
 void sdb_loop(void) {
+    cpu_exec(-1);
+    return;
     char input[1024];
     while (true) {
         printf("(npc) ");

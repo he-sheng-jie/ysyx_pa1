@@ -106,8 +106,9 @@ static void execute(uint64_t n) {
         #if   defined(CONFIG_MTRACE)
           memlog_dump_to_stdout();
         #endif
-        iringbuf_dump();
+        
       }
+      iringbuf_dump();
       break;
     }
     IFDEF(CONFIG_DEVICE, device_update());

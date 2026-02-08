@@ -11,7 +11,7 @@ Vtop__Syms::Vtop__Syms(VerilatedContext* contextp, const char* namep, Vtop* mode
     , TOP{this, namep}
 {
     // Check resources
-    Verilated::stackCheck(302);
+    Verilated::stackCheck(358);
     // Setup sub module instances
     TOP____024unit.ctor(this, "$unit");
     // Configure time unit / time precision

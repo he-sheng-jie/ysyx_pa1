@@ -180,7 +180,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw, I,
     int idx = csr_index(imm);
     uint32_t old_val = cpu.csr[idx];
-    if (rs_1 != 0)
+    // if (rs_1 != 0)
       cpu.csr[idx] = (uint32_t)src1;   
     R(rd) = old_val
   );
@@ -188,7 +188,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, 
     int idx = csr_index(imm);
     uint32_t old_val = cpu.csr[idx];
-    if (rs_1 != 0)
+    // if (rs_1 != 0)
       cpu.csr[idx] |= (uint32_t)src1;
     R(rd) = old_val
     );
@@ -196,12 +196,12 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 011 ????? 11100 11", csrrc  , I, 
     int idx = csr_index(imm);
     uint32_t old_val = cpu.csr[idx];
-    if (rs_1 != 0)
+    // if (rs_1 != 0)
       cpu.csr[idx] &= ~src1; 
     R(rd) = old_val
   );
   
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, s->dnpc = isa_raise_intr(1,s->pc + 4));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, s->dnpc = isa_raise_intr(11,s->pc));
 
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , R, s->dnpc = cpu.csr[1]);
 

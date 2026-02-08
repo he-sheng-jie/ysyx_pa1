@@ -20,9 +20,11 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     VL_IN8(clk,0,0);
     VL_IN8(rst,0,0);
     VL_OUT8(num,4,0);
+    CData/*0:0*/ top__DOT__mcycle_write_en;
+    CData/*0:0*/ top__DOT__my_CU__DOT__csr_to_reg_en;
     CData/*0:0*/ top__DOT__my_CU__DOT__is_jalr;
     CData/*3:0*/ top__DOT__my_CU__DOT__alu_op;
-    CData/*0:0*/ __VdfgRegularize_h6e95ff9d_0_1;
+    CData/*0:0*/ __VdfgRegularize_h6e95ff9d_0_9;
     CData/*0:0*/ __VstlFirstIteration;
     CData/*0:0*/ __VicoFirstIteration;
     CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
@@ -30,9 +32,21 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     VL_IN(inst,31,0);
     VL_OUT(pc,31,0);
     VL_OUT(pc_before,31,0);
+    VL_OUT(my_mtvec,31,0);
+    VL_OUT(my_mepc,31,0);
+    VL_OUT(my_mcause,31,0);
+    VL_OUT(my_mstatus,31,0);
     IData/*31:0*/ top__DOT__pc_before_reg;
     IData/*31:0*/ top__DOT__mem_to_reg_addr;
     IData/*31:0*/ top__DOT__mem_read_data;
+    IData/*31:0*/ top__DOT__mcycle;
+    IData/*31:0*/ top__DOT__mcycleh;
+    IData/*31:0*/ top__DOT__mvendorid;
+    IData/*31:0*/ top__DOT__marchid;
+    IData/*31:0*/ top__DOT__mstatus;
+    IData/*31:0*/ top__DOT__mepc;
+    IData/*31:0*/ top__DOT__mcause;
+    IData/*31:0*/ top__DOT__mtvec;
     IData/*31:0*/ top__DOT__my_CU__DOT__rdata2;
     IData/*31:0*/ top__DOT__my_CU__DOT__imm_i;
     IData/*31:0*/ top__DOT__my_CU__DOT__wdata;
@@ -41,6 +55,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     IData/*31:0*/ top__DOT__my_CU__DOT__my_ALU__DOT__num1;
     IData/*31:0*/ top__DOT__my_CU__DOT__my_ALU__DOT__num2;
     IData/*31:0*/ top__DOT__my_CU__DOT__my_ALU__DOT__alu_result;
+    IData/*31:0*/ top__DOT__my_CSR_ALU__DOT__data1;
+    IData/*31:0*/ top__DOT__my_CSR_ALU__DOT__data2;
+    IData/*31:0*/ top__DOT__my_CSR_ALU__DOT__csrdata;
     IData/*31:0*/ __Vfunc_pmem_read__0__Vfuncout;
     IData/*31:0*/ __VactIterCount;
     VL_OUT(debug_rf[33],31,0);
@@ -51,7 +68,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     VlUnpacked<QData/*63:0*/, 1> __VicoTriggered;
     VlUnpacked<QData/*63:0*/, 1> __VactTriggered;
     VlUnpacked<QData/*63:0*/, 1> __VnbaTriggered;
-    VlUnpacked<CData/*0:0*/, 3> __Vm_traceActivity;
+    VlUnpacked<CData/*0:0*/, 4> __Vm_traceActivity;
 
     // INTERNAL VARIABLES
     Vtop__Syms* vlSymsp;

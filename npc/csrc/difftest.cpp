@@ -57,6 +57,14 @@ void print_reg_diff(const CPU_state *ref) {
 
     printf("\033[1;33mpc_before = 0x%08x\033[0m\n", top->pc_before);
     printf("\n");
+
+    printf("\n\033[1;33m>>> EXCEPTION DETECTED in DUT <<<\033[0m\n");
+    printf("PC before exception: 0x%08x\n", top->pc_before);
+    printf("Exception cause     : 0x%08x\n", top->my_mcause);
+    printf("mepc                : 0x%08x\n", top->my_mepc);
+    printf("mstatus             : 0x%08x\n", top->my_mstatus);
+    printf("mtvec               : 0x%08x\n", top->my_mtvec);
+    printf("----------------------------------------\n");
 }
 
 bool difftest_checkregs(CPU_state *ref_r) {
